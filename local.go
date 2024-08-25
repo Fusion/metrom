@@ -10,7 +10,19 @@ type Local struct {
 }
 
 func NewLocal() (*Local, error) {
-	return &Local{address: "0.0.0.0"}, nil
+	// Determine preferred IP address
+	// TODO Make it selectable, too
+	var address string
+	conn, err := net.Dial("udp", "1.1.1.1:80")
+	if err != nil {
+		// TODO make a note -- you may have bigger problems!
+		address = "0.0.0.0"
+	} else {
+		defer conn.Close()
+		address = conn.LocalAddr().(*net.UDPAddr).IP.String()
+	}
+	fmt.Printf("Using local IP [%s]\n", address)
+	return &Local{address: address}, nil
 }
 
 func (l Local) enumerate() {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -10,6 +9,7 @@ type HopHandler struct {
 	remote         Remote
 	connbehavior   ConnBehavior
 	firstroundtrip bool
+	udpwriter      *UdpWriter
 	start          time.Time
 }
 
@@ -21,9 +21,17 @@ func NewHopHandler(local Local, remote Remote, connbehavior ConnBehavior) HopHan
 		firstroundtrip: true}
 }
 
-func (h HopHandler) run() {
-	finalHop := false
-	for {
+func (h *HopHandler) run() error {
+	writer, err := NewUdpWriter(h.connbehavior.ttl, h.remote)
+	if err != nil {
+		return err
+	}
+	h.start = time.Now()
+	h.udpwriter = writer
+	writer.poke()
+	writer.cleanup()
+	return nil
+	/*
 		nextPause, err := h.roundtrip()
 		if err != nil {
 			_, ok := err.(*TimeoutError)
@@ -36,24 +44,11 @@ func (h HopHandler) run() {
 			}
 			fmt.Println(err)
 		}
-		if h.firstroundtrip {
-			if !finalHop {
-				nextHopHandler := NewHopHandler(h.local, h.remote, ConnBehavior{
-					pause:   h.connbehavior.timeout,
-					timeout: h.connbehavior.timeout,
-					retries: h.connbehavior.retries,
-					ttl:     h.connbehavior.ttl + 1})
-				go nextHopHandler.run()
-			}
-			h.firstroundtrip = false
-		}
-		if nextPause > 0 {
-			time.Sleep(nextPause)
-		}
-	}
+	*/
 }
 
-func (h HopHandler) roundtrip() (time.Duration, error) {
+/*
+func (h *HopHandler) roundtrip() (time.Duration, error) {
 	writer, err := NewUdpWriter(h.remote)
 	if err != nil {
 		return 0, err
@@ -66,7 +61,7 @@ func (h HopHandler) roundtrip() (time.Duration, error) {
 	reader := NewIcmpHandler(*listener, h.connbehavior.timeout)
 
 	start := time.Now()
-	writer.poke(h.connbehavior.ttl)
+	writer.poke(1, h.connbehavior.ttl)
 	answer, err := reader.listen()
 	if err != nil {
 		return 0, err
@@ -86,3 +81,4 @@ func (h HopHandler) roundtrip() (time.Duration, error) {
 
 	return nextPause, nil
 }
+*/
