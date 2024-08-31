@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Wails HTMX Templ App</title>
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <link rel="stylesheet" href="src/assets/css/app.css">
+</head>
+
+<body>
+  <div id="app">
+    <div class="drawer lg:drawer-open">
+      <input id="my-drawer-2" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content flex flex-col items-center justify-center">
+        <div class="mx-auto w-10/12 py-20 rounded-lg shadow-lg backdrop-blur-sm bg-white/10 backdrop-filter">
+          <form
+            id="subject-form"
+            class="main-header space-y-6"
+            hx-post="/hops"
+            hx-on::after-request="if(event.detail.successful) this.reset()"
+          >
+            <input
+              class="input"
+              type="text"
+              name="subject"
+              id="subject"
+              placeholder="subject"
+            />          
+            <button
+              class="btn"
+              type="submit"
+            >Start</button>
+          </form>
+          <form>
+            <label class="label cursor-pointer">
+              <span class="label-text">Hostnames</span>
+              <input type="checkbox" id="cb-resolve" name="cb-resolve" class="checkbox" hx-post="/hops/toggleresolve" hx-trigger="change" />
+            </label>
+          </form>
+
+          <div class="overflow-x-auto">
+            <table class="table table-pin-rows">
+              <!-- head -->
+              <thead>
+                <tr>
+                  <th>Hop</th>
+                  <th>Host</th>
+                  <th>Loss %</th>
+                  <th>Latency</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                  <th>Jitter</th>
+                  <th>Min</th>
+                  <th>Max</th>
+                </tr>
+              </thead>
+              <tbody id="hop-list" hx-get="/hops" hx-trigger="every 2s" hx-on::trigger="console.log(event)"></tbody>
+                <!-- row 1 -->
+              </tbody>
+            </table>
+
+          </div>
+          <!-- -->
+        </div>
+        <label for="my-drawer-2" class="btn btn-primary drawer-button lg:hidden">Open drawer</label>
+      </div>
+      <div class="drawer-side">
+        <label for="my-drawer-2" class="drawer-overlay"></label>
+        <ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+          <img id="logo" class="logo max-w-[50%]" src="src/assets/images/logo-universal.png">
+          <div id="initial" hx-get="/initial" hx-trigger="load" hx-target="#initial" hx-swap="outerHTML"></div>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="modalwrapper"></div>
+
+  <script>
+    /*
+    htmx.on("htmx:responseError", function (e) {
+      if (e.detail.xhr.status == 418) {
+        document.getElementById('modalwrapper').innerHTML = e.detail.xhr.responseText;
+        document.getElementById('modalwrapper').classList.add('modal-open');
+      }
+    })
+
+    window.onclick = function(event) {
+      if (event.target == document.getElementById('modal')) {
+        document.getElementById('modalwrapper').innerHTML = '';
+      }
+    }
+      */
+  </script>
+</body>
+</html>
