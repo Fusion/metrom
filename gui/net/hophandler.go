@@ -1,7 +1,6 @@
 package net
 
 import (
-	"fmt"
 	"time"
 )
 
@@ -41,7 +40,7 @@ func NewHopHandler(local Local, remote Remote, connbehavior ConnBehavior) HopHan
 		attemptsleft: 3}
 }
 
-// TODO Setup a timeout retry guy
+// TODO Setup a timeout retry guy or sumthin... not sure
 func (h *HopHandler) run() error {
 	h.HopStats.PingTotal += 1
 	writer, err := NewUdpWriter(h.connbehavior.ttl, h.remote)
@@ -62,9 +61,11 @@ func (h *HopHandler) MemoryLatency(latency int64) {
 	}
 	h.HopStats.History[h.HopStats.HistoryWriterHead] = latency
 
+	/* debug
 	if h.connbehavior.ttl == 4 {
 		fmt.Println(h.HopStats.History)
 	}
+	*/
 }
 
 func (h *HopHandler) GetJitter() int64 {

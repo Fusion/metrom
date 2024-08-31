@@ -38,15 +38,13 @@ func (i IcmpHandler) listen() (*IcmpAnswer, error) {
 		}
 		// TODO
 	}
-	var remoteIp net.IP
-	remoteIp = net.ParseIP(sAddr.String())
+	remoteIp := net.ParseIP(sAddr.String())
 	if remoteIp == nil {
 		return nil, &TimeoutError{}
 	}
 
-	remoteDNS, _ := net.LookupAddr(remoteIp.String())
 	return &IcmpAnswer{
 		originPort: originPort,
 		ip:         remoteIp,
-		name:       remoteDNS}, nil
+		name:       []string{}}, nil
 }

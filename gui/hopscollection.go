@@ -10,10 +10,13 @@ import (
 
 type HopsCollection struct {
 	controller BackendController[net.Data, net.NetOption]
+	resolver   net.Resolver
 }
 
-func NewHopsCollection(controller BackendController[net.Data, net.NetOption]) HopsCollection {
-	return HopsCollection{controller: controller}
+func NewHopsCollection(controller BackendController[net.Data, net.NetOption], resolver net.Resolver) HopsCollection {
+	return HopsCollection{
+		controller: controller,
+		resolver:   net.NewResolver()}
 }
 
 func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
@@ -32,10 +35,9 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 		var host string
 		if h.controller.GetSetting("resolve") == "on" {
 			if len(data.HopStatus[i].RemoteDNS) == 0 {
-				host = data.HopStatus[i].RemoteIp
-			} else {
-				host = data.HopStatus[i].RemoteDNS[0]
+				data.HopStatus[i].RemoteDNS = h.resolver.ResolveAddress(data.HopStatus[i].RemoteIp)
 			}
+			host = data.HopStatus[i].RemoteDNS[0]
 		} else {
 			host = data.HopStatus[i].RemoteIp
 		}

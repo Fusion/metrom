@@ -139,6 +139,7 @@ func (n *NetController) Run(options ...NetOption) error {
 			}
 			return err
 		}
+		// TODO CONCURRENT MAP R/W ERROR
 		hopHandler, ok := n.hopHandlers[string(answer.originPort)]
 		if !ok {
 			continue // TODO stray packet?
