@@ -152,6 +152,25 @@ func (n *NetController) Run(options ...NetOption) error {
 			}
 		}
 		elapsed := time.Since(hopHandler.start).Milliseconds()
+		if hopHandler.HopStats.ElapsedMin == -1 || elapsed < hopHandler.HopStats.ElapsedMin {
+			hopHandler.HopStats.ElapsedMin = elapsed
+		}
+		if hopHandler.HopStats.ElapsedMax == -1 || elapsed > hopHandler.HopStats.ElapsedMax {
+			hopHandler.HopStats.ElapsedMax = elapsed
+		}
+		jitter, jitterMin, jitterMax := int64(0), int64(0), int64(0)
+		if hopHandler.HopStats.PingTotal >= 5 {
+			jitter = hopHandler.GetJitter()
+			if hopHandler.HopStats.JitterMin == -1 || jitter < hopHandler.HopStats.JitterMin {
+				hopHandler.HopStats.JitterMin = jitter
+			}
+			jitterMin = hopHandler.HopStats.JitterMin
+			if hopHandler.HopStats.JitterMax == -1 || jitter > hopHandler.HopStats.JitterMax {
+				hopHandler.HopStats.JitterMax = jitter
+			}
+			jitterMax = hopHandler.HopStats.JitterMax
+		}
+		hopHandler.MemoryLatency(elapsed)
 		/*
 			fmt.Printf("%d: from %s (%s) reply to %d in %dms\n",
 				hopHandler.connbehavior.ttl,
@@ -162,9 +181,16 @@ func (n *NetController) Run(options ...NetOption) error {
 		*/
 		n.HopsLock.Lock()
 		n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
-			RemoteIp:  answer.ip.String(),
-			RemoteDNS: answer.name,
-			Elapsed:   elapsed,
+			RemoteIp:   answer.ip.String(),
+			RemoteDNS:  answer.name,
+			Elapsed:    elapsed,
+			ElapsedMin: hopHandler.HopStats.ElapsedMin,
+			ElapsedMax: hopHandler.HopStats.ElapsedMax,
+			PingTotal:  hopHandler.HopStats.PingTotal + 1,
+			PingMiss:   hopHandler.HopStats.PingMiss,
+			Jitter:     jitter,
+			JitterMin:  jitterMin,
+			JitterMax:  jitterMax,
 		}
 		n.HopsLock.Unlock()
 
@@ -183,7 +209,7 @@ func (n *NetController) Run(options ...NetOption) error {
 				n.data.TopHop = hopHandler.connbehavior.ttl
 				if n.data.TopHop <= runOptions.MaxHops {
 					for i := n.data.TopHop; i <= runOptions.MaxHops; i++ {
-						n.data.HopStatus[i] = HopStatus{}
+						n.data.HopStatus[i] = NewHopStatus()
 					}
 				}
 			}
@@ -216,6 +242,7 @@ func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) 
 		go func() {
 			select {
 			case <-timer.C:
+				hopHandler.HopStats.PingMiss += 1
 				n.runHandler(hopHandler, hopHandler.connbehavior.quiescent-hopHandler.connbehavior.timeout /* delay */)
 			case <-hopHandler.linger:
 			}

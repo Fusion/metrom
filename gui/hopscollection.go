@@ -23,7 +23,7 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 	h.controller.LockData()
 	data := h.controller.GetData()
 	for i := 1; i < len(data.HopStatus); i++ {
-		if data.HopStatus[i].Elapsed == 0 {
+		if data.HopStatus[i].PingTotal == 0 {
 			// TODO
 			// Decide what the best UX would be: display all these "***"
 			// or simply not display them, and have a less bloated experience?
@@ -42,13 +42,13 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 		hops = append(hops, models.FrontendHop{
 			Hop:        strconv.Itoa(i),
 			Host:       host,
-			Loss:       "0",
+			Loss:       strconv.FormatInt(data.HopStatus[i].PingMiss*100/data.HopStatus[i].PingTotal, 10),
 			LatencyAvg: strconv.FormatInt(data.HopStatus[i].Elapsed, 10),
-			LatencyMin: strconv.FormatInt(data.HopStatus[i].Elapsed, 10),
-			LatencyMax: strconv.FormatInt(data.HopStatus[i].Elapsed, 10),
-			JitterAvg:  "0",
-			JitterMin:  "0",
-			JitterMax:  "0",
+			LatencyMin: strconv.FormatInt(data.HopStatus[i].ElapsedMin, 10),
+			LatencyMax: strconv.FormatInt(data.HopStatus[i].ElapsedMax, 10),
+			JitterAvg:  strconv.FormatInt(data.HopStatus[i].Jitter, 10),
+			JitterMin:  strconv.FormatInt(data.HopStatus[i].JitterMin, 10),
+			JitterMax:  strconv.FormatInt(data.HopStatus[i].JitterMax, 10),
 		})
 	}
 	h.controller.UnlockData()

@@ -24,7 +24,7 @@ func NewUdpWriter(ttl int, remote Remote) (*UdpWriter, error) {
 	if !ok {
 		return nil, fmt.Errorf("unable to get local address")
 	}
-	fmt.Printf("For ttl=%d, new port = %d\n", ttl, udpAddr.Port)
+	//fmt.Printf("For ttl=%d, new port = %d\n", ttl, udpAddr.Port)
 
 	return &UdpWriter{
 		conn:       conn,
