@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"gui/components"
 	"gui/models"
 	"gui/net"
@@ -79,17 +80,32 @@ func (h *HopsCollection) ToggleResolve(w http.ResponseWriter, r *http.Request) {
 
 func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
+
+	if h.controller.Cancel() { // I was running!
+		w.Header().Set("HX-Retarget", "#actioncontainer")
+		component := components.OOBButton("done")
+		component.Render(r.Context(), w)
+		return
+	}
+
 	subject := r.FormValue("subject")
 	if subject == "" {
 		openModal(w, r, "Hold on", "Please enter a host name or ip address")
 		return
 	}
-	err := h.controller.Run(
-		net.WithOption(net.VHost{Value: r.FormValue("subject")}),
-		net.WithOption(net.VMaxHops{Value: 30}),
-	)
-	if err != nil {
-		openModal(w, r, "Error", err.Error())
-		return
-	}
+
+	go func() {
+		err := h.controller.Run(
+			net.WithOption(net.VHost{Value: r.FormValue("subject")}),
+			net.WithOption(net.VMaxHops{Value: 30}),
+		)
+		fmt.Println("canceling hopscollection process")
+		if err != nil {
+			openModal(w, r, "Error", err.Error())
+		}
+	}()
+
+	w.Header().Set("HX-Retarget", "#actioncontainer")
+	component := components.OOBButton("search")
+	component.Render(r.Context(), w)
 }

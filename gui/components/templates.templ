@@ -39,6 +39,21 @@ templ Modal(title string, message string) {
 	</dialog>
 }
 
+templ OOBButton(action string) {
+	if action == "search" {
+            <button
+              class="btn"
+              type="submit"
+            >Stop</button>
+			<span class="loading loading-bars inline-block align-middle"></span>
+	} else {
+            <button
+              class="btn"
+              type="submit"
+            >Start</button>
+	}
+}
+
 templ Button(classes string, hxUrl string, hxTarget string, hxSwap string,method string,label string) {
 	<button
  		class="btn { classes }"

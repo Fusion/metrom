@@ -63,11 +63,13 @@ type Data struct {
 }
 
 type NetController struct {
-	HopsLock     sync.Mutex
-	data         Data
-	SettingsLock sync.Mutex
-	settings     map[string]string
-	hopHandlers  map[string]*HopHandler
+	HopsLock      sync.Mutex
+	data          Data
+	SettingsLock  sync.Mutex
+	settings      map[string]string
+	hopHandlers   map[string]*HopHandler
+	running       bool
+	cancelRequest chan struct{}
 }
 
 func NewNetController() NetController {
@@ -107,6 +109,8 @@ func (n *NetController) Run(options ...NetOption) error {
 		return err
 	}
 
+	n.running = true
+
 	pause := time.Duration(float64(3) * float64(time.Second.Nanoseconds()))
 	timeout := time.Duration(float64(3) * float64(time.Second.Nanoseconds()))
 	quiescent := time.Duration(float64(5) * float64(time.Second.Nanoseconds()))
@@ -127,97 +131,115 @@ func (n *NetController) Run(options ...NetOption) error {
 
 	foundTarget := false
 
+	n.cancelRequest = make(chan struct{})
 	go reader.listen()
 
 	for answer := range reader.Mailbox {
-		// TODO CONCURRENT MAP R/W ERROR
-		hopHandler, ok := n.hopHandlers[string(answer.originPort)]
-		if !ok {
-			continue // TODO stray packet?
-		}
-		hopHandler.linger <- true // cancel timeout
-		delete(n.hopHandlers, string(answer.originPort))
-		if foundTarget {
-			// Are we past our target?
-			if hopHandler.connbehavior.ttl > n.data.TopHop {
-				continue
+		select {
+		case <-n.cancelRequest:
+			reader.cancel()
+			fmt.Println("netcontroller canceling")
+			n.running = false
+			return nil
+		default:
+			// TODO CONCURRENT MAP R/W ERROR
+			hopHandler, ok := n.hopHandlers[string(answer.originPort)]
+			if !ok {
+				continue // TODO stray packet?
 			}
-		}
-		elapsed := time.Since(hopHandler.start).Milliseconds()
-		if hopHandler.HopStats.ElapsedMin == -1 || elapsed < hopHandler.HopStats.ElapsedMin {
-			hopHandler.HopStats.ElapsedMin = elapsed
-		}
-		if hopHandler.HopStats.ElapsedMax == -1 || elapsed > hopHandler.HopStats.ElapsedMax {
-			hopHandler.HopStats.ElapsedMax = elapsed
-		}
-		jitter, jitterMin, jitterMax := int64(0), int64(0), int64(0)
-		if hopHandler.HopStats.PingTotal >= 5 {
-			jitter = hopHandler.GetJitter()
-			if hopHandler.HopStats.JitterMin == -1 || jitter < hopHandler.HopStats.JitterMin {
-				hopHandler.HopStats.JitterMin = jitter
-			}
-			jitterMin = hopHandler.HopStats.JitterMin
-			if hopHandler.HopStats.JitterMax == -1 || jitter > hopHandler.HopStats.JitterMax {
-				hopHandler.HopStats.JitterMax = jitter
-			}
-			jitterMax = hopHandler.HopStats.JitterMax
-		}
-		hopHandler.MemoryLatency(elapsed)
-		/*
-			fmt.Printf("%d: from %s (%s) reply to %d in %dms\n",
-				hopHandler.connbehavior.ttl,
-				answer.ip.String(),
-				answer.name,
-				answer.originPort,
-				elapsed)
-		*/
-		n.HopsLock.Lock()
-		n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
-			RemoteIp:   answer.ip.String(),
-			RemoteDNS:  answer.name,
-			Elapsed:    elapsed,
-			ElapsedMin: hopHandler.HopStats.ElapsedMin,
-			ElapsedMax: hopHandler.HopStats.ElapsedMax,
-			PingTotal:  hopHandler.HopStats.PingTotal + 1,
-			PingMiss:   hopHandler.HopStats.PingMiss,
-			Jitter:     jitter,
-			JitterMin:  jitterMin,
-			JitterMax:  jitterMax,
-		}
-		n.HopsLock.Unlock()
-
-		if answer.ip.String() == remote.ip.String() {
-			newTop := false
+			hopHandler.linger <- true // cancel timeout
+			delete(n.hopHandlers, string(answer.originPort))
 			if foundTarget {
-				// Always stop at the closest answer
-				if hopHandler.connbehavior.ttl < n.data.TopHop {
-					newTop = true
-				}
-			} else {
-				foundTarget = true
-				newTop = true
-			}
-			if newTop {
-				n.data.TopHop = hopHandler.connbehavior.ttl
-				if n.data.TopHop <= runOptions.MaxHops {
-					for i := n.data.TopHop; i <= runOptions.MaxHops; i++ {
-						n.data.HopStatus[i] = NewHopStatus()
-					}
-				}
-			}
-		} else {
-			if foundTarget {
+				// Are we past our target?
 				if hopHandler.connbehavior.ttl > n.data.TopHop {
 					continue
 				}
 			}
-		}
+			elapsed := time.Since(hopHandler.start).Milliseconds()
+			if hopHandler.HopStats.ElapsedMin == -1 || elapsed < hopHandler.HopStats.ElapsedMin {
+				hopHandler.HopStats.ElapsedMin = elapsed
+			}
+			if hopHandler.HopStats.ElapsedMax == -1 || elapsed > hopHandler.HopStats.ElapsedMax {
+				hopHandler.HopStats.ElapsedMax = elapsed
+			}
+			jitter, jitterMin, jitterMax := int64(0), int64(0), int64(0)
+			if hopHandler.HopStats.PingTotal >= 5 {
+				jitter = hopHandler.GetJitter()
+				if hopHandler.HopStats.JitterMin == -1 || jitter < hopHandler.HopStats.JitterMin {
+					hopHandler.HopStats.JitterMin = jitter
+				}
+				jitterMin = hopHandler.HopStats.JitterMin
+				if hopHandler.HopStats.JitterMax == -1 || jitter > hopHandler.HopStats.JitterMax {
+					hopHandler.HopStats.JitterMax = jitter
+				}
+				jitterMax = hopHandler.HopStats.JitterMax
+			}
+			hopHandler.MemoryLatency(elapsed)
+			/*
+				fmt.Printf("%d: from %s (%s) reply to %d in %dms\n",
+					hopHandler.connbehavior.ttl,
+					answer.ip.String(),
+					answer.name,
+					answer.originPort,
+					elapsed)
+			*/
+			n.HopsLock.Lock()
+			n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
+				RemoteIp:   answer.ip.String(),
+				RemoteDNS:  answer.name,
+				Elapsed:    elapsed,
+				ElapsedMin: hopHandler.HopStats.ElapsedMin,
+				ElapsedMax: hopHandler.HopStats.ElapsedMax,
+				PingTotal:  hopHandler.HopStats.PingTotal + 1,
+				PingMiss:   hopHandler.HopStats.PingMiss,
+				Jitter:     jitter,
+				JitterMin:  jitterMin,
+				JitterMax:  jitterMax,
+			}
+			n.HopsLock.Unlock()
 
-		//updateDisplay(n.data.HopStatus)
-		n.runHandler(hopHandler, hopHandler.connbehavior.pause-time.Duration(elapsed) /* delay */)
+			if answer.ip.String() == remote.ip.String() {
+				newTop := false
+				if foundTarget {
+					// Always stop at the closest answer
+					if hopHandler.connbehavior.ttl < n.data.TopHop {
+						newTop = true
+					}
+				} else {
+					foundTarget = true
+					newTop = true
+				}
+				if newTop {
+					n.data.TopHop = hopHandler.connbehavior.ttl
+					if n.data.TopHop <= runOptions.MaxHops {
+						for i := n.data.TopHop; i <= runOptions.MaxHops; i++ {
+							n.data.HopStatus[i] = NewHopStatus()
+						}
+					}
+				}
+			} else {
+				if foundTarget {
+					if hopHandler.connbehavior.ttl > n.data.TopHop {
+						continue
+					}
+				}
+			}
+
+			//updateDisplay(n.data.HopStatus)
+			n.runHandler(hopHandler, hopHandler.connbehavior.pause-time.Duration(elapsed) /* delay */)
+		}
 	}
 
 	return nil
+}
+
+// TODO return a 3-state enum: I wasnt running, success, failure
+func (n *NetController) Cancel() bool {
+	if n.running {
+		close(n.cancelRequest)
+		return true
+	}
+	return false
 }
 
 func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) {
