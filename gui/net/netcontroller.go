@@ -127,18 +127,9 @@ func (n *NetController) Run(options ...NetOption) error {
 
 	foundTarget := false
 
-	for {
-		//fmt.Println("about to listen")
-		answer, err := reader.listen()
-		//fmt.Println("done listening")
-		if err != nil {
-			_, ok := err.(*TimeoutError)
-			if ok {
-				// TODO timeout
-				continue
-			}
-			return err
-		}
+	go reader.listen()
+
+	for answer := range reader.Mailbox {
 		// TODO CONCURRENT MAP R/W ERROR
 		hopHandler, ok := n.hopHandlers[string(answer.originPort)]
 		if !ok {
@@ -225,6 +216,8 @@ func (n *NetController) Run(options ...NetOption) error {
 		//updateDisplay(n.data.HopStatus)
 		n.runHandler(hopHandler, hopHandler.connbehavior.pause-time.Duration(elapsed) /* delay */)
 	}
+
+	return nil
 }
 
 func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) {
