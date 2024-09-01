@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"gui/components"
 	"gui/net"
 	"net/http"
@@ -64,6 +63,8 @@ func NewChiRouter() *chi.Mux {
 	}{
 		version, "No update available",
 	})).ServeHTTP)
+	r.Get("/closemodal", closeModal)
+
 	r.Get("/greet", templ.Handler(components.GreetForm("/greet")).ServeHTTP)
 	r.Post("/greet", components.Greet)
 	r.Get("/modal", templ.Handler(components.TestPage("#modal", "outerHTML")).ServeHTTP)
@@ -72,14 +73,16 @@ func NewChiRouter() *chi.Mux {
 }
 
 func openModal(w http.ResponseWriter, r *http.Request, title string, message string) {
+	w.Header().Add("Cache-Control", "no-store")
 	w.Header().Set("HX-Retarget", "#modalwrapper")
 	component := components.Modal(title, message)
 	component.Render(r.Context(), w)
 }
 
 func closeModal(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("MODAL OUT")
-	fmt.Fprintf(w, "")
+	w.Header().Add("Cache-Control", "no-store")
+	// Never write an empty string; wail's middleware makes some assumptions
+	w.Write(nil)
 }
 
 func HopsCollector() chi.Router {
