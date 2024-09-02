@@ -65,17 +65,14 @@ type Data struct {
 type NetController struct {
 	HopsLock      sync.Mutex
 	data          Data
-	SettingsLock  sync.Mutex
-	settings      map[string]string
-	hopHandlers   map[string]*HopHandler
+	settings      sync.Map
+	hopHandlers   sync.Map
 	running       bool
 	cancelRequest chan struct{}
 }
 
 func NewNetController() NetController {
-	return NetController{
-		settings: make(map[string]string),
-	}
+	return NetController{}
 }
 
 func (n *NetController) LockData() {
@@ -116,7 +113,6 @@ func (n *NetController) Run(options ...NetOption) error {
 	quiescent := time.Duration(float64(5) * float64(time.Second.Nanoseconds()))
 
 	n.data.HopStatus = make([]HopStatus, runOptions.MaxHops+1)
-	n.hopHandlers = make(map[string]*HopHandler)
 
 	reader := NewIcmpHandler(*listener, timeout)
 	for hop := 1; hop <= runOptions.MaxHops; hop++ {
@@ -143,12 +139,13 @@ func (n *NetController) Run(options ...NetOption) error {
 			return nil
 		default:
 			// TODO CONCURRENT MAP R/W ERROR
-			hopHandler, ok := n.hopHandlers[string(answer.originPort)]
+			hopHandlerVal, ok := n.hopHandlers.Load(string(answer.originPort))
 			if !ok {
 				continue // TODO stray packet?
 			}
+			hopHandler := hopHandlerVal.(*HopHandler)
 			hopHandler.linger <- true // cancel timeout
-			delete(n.hopHandlers, string(answer.originPort))
+			n.hopHandlers.Delete(string(answer.originPort))
 			if foundTarget {
 				// Are we past our target?
 				if hopHandler.connbehavior.ttl > n.data.TopHop {
@@ -183,7 +180,7 @@ func (n *NetController) Run(options ...NetOption) error {
 					answer.originPort,
 					elapsed)
 			*/
-			n.HopsLock.Lock()
+			n.LockData()
 			n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
 				RemoteIp:   answer.ip.String(),
 				RemoteDNS:  answer.name,
@@ -196,7 +193,7 @@ func (n *NetController) Run(options ...NetOption) error {
 				JitterMin:  jitterMin,
 				JitterMax:  jitterMax,
 			}
-			n.HopsLock.Unlock()
+			n.UnlockData()
 
 			if answer.ip.String() == remote.ip.String() {
 				newTop := false
@@ -210,12 +207,14 @@ func (n *NetController) Run(options ...NetOption) error {
 					newTop = true
 				}
 				if newTop {
+					n.LockData()
 					n.data.TopHop = hopHandler.connbehavior.ttl
 					if n.data.TopHop <= runOptions.MaxHops {
 						for i := n.data.TopHop; i <= runOptions.MaxHops; i++ {
 							n.data.HopStatus[i] = NewHopStatus()
 						}
 					}
+					n.UnlockData()
 				}
 			} else {
 				if foundTarget {
@@ -233,7 +232,7 @@ func (n *NetController) Run(options ...NetOption) error {
 	return nil
 }
 
-// TODO return a 3-state enum: I wasnt running, success, failure
+// TODO return a 3-state enum
 func (n *NetController) Cancel() bool {
 	if n.running {
 		close(n.cancelRequest)
@@ -249,9 +248,7 @@ func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) 
 		}
 
 		hopHandler.run()
-		n.HopsLock.Lock()
-		n.hopHandlers[string(hopHandler.udpwriter.sourcePort)] = hopHandler
-		n.HopsLock.Unlock()
+		n.hopHandlers.Store(string(hopHandler.udpwriter.sourcePort), hopHandler)
 
 		hopHandler.linger = make(chan bool)
 		timer := time.NewTimer(hopHandler.connbehavior.timeout)
@@ -271,16 +268,12 @@ func (n *NetController) GetData() Data {
 }
 
 func (n *NetController) SetSetting(key string, value string) {
-	n.SettingsLock.Lock()
-	defer n.SettingsLock.Unlock()
-	n.settings[key] = value
+	n.settings.Store(key, value)
 }
 
 func (n *NetController) GetSetting(key string) string {
-	n.SettingsLock.Lock()
-	defer n.SettingsLock.Unlock()
-	res := n.settings[key]
-	return res
+	res, _ := n.settings.Load(key)
+	return res.(string)
 }
 
 func updateDisplay(hopStatus []HopStatus) {

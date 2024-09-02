@@ -2,7 +2,6 @@ package net
 
 import (
 	"errors"
-	"fmt"
 	"net"
 	"os"
 	"time"
@@ -31,7 +30,6 @@ func (i *IcmpHandler) listen() {
 	for {
 		select {
 		case <-i.cancelRequest:
-			fmt.Println("icmphandler canceling")
 			i.icmpListener.packetConn.Close()
 			return
 		default:
