@@ -11,11 +11,11 @@ type UdpWriter struct {
 	conn       net.Conn
 	sourcePort int
 	ttl        int
+	seq        int
 }
 
-func NewUdpWriter(ttl int, remote Remote) (*UdpWriter, error) {
-
-	conn, err := net.Dial("udp4", remote.String())
+func NewUdpWriter(seq int, ttl int, remote Remote) (*UdpWriter, error) {
+	conn, err := net.Dial("udp4", remote.StringWithSeq(seq))
 	if err != nil {
 		return nil, err
 	}

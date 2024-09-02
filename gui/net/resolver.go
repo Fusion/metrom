@@ -25,3 +25,7 @@ func (r *Resolver) ResolveAddress(address string) []string {
 	}
 	return resolved
 }
+
+func (r *Resolver) Cleanup() {
+	r.cache = make(map[string][]string)
+}

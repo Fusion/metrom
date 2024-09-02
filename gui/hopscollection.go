@@ -17,7 +17,7 @@ type HopsCollection struct {
 func NewHopsCollection(controller BackendController[net.Data, net.NetOption], resolver net.Resolver) HopsCollection {
 	return HopsCollection{
 		controller: controller,
-		resolver:   net.NewResolver()}
+		resolver:   resolver}
 }
 
 func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
@@ -94,6 +94,7 @@ func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.resolver.Cleanup()
 	go func() {
 		err := h.controller.Run(
 			net.WithOption(net.VHost{Value: r.FormValue("subject")}),

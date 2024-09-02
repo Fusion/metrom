@@ -33,3 +33,7 @@ func NewRemote(address string, port uint16) (*Remote, error) {
 func (r Remote) String() string {
 	return r.ip.String() + ":" + strconv.Itoa(int(r.port))
 }
+
+func (r Remote) StringWithSeq(seq int) string {
+	return r.ip.String() + ":" + strconv.Itoa(int(r.port)+seq)
+}

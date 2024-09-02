@@ -22,7 +22,7 @@ type HopHandler struct {
 	attemptsleft int
 	udpwriter    *UdpWriter
 	start        time.Time
-	linger       chan bool
+	donotlinger  chan bool
 	HopStats     HopStats
 }
 
@@ -40,10 +40,9 @@ func NewHopHandler(local Local, remote Remote, connbehavior ConnBehavior) HopHan
 		attemptsleft: 3}
 }
 
-// TODO Setup a timeout retry guy or sumthin... not sure
-func (h *HopHandler) run() error {
+func (h *HopHandler) run(seq int) error {
 	h.HopStats.PingTotal += 1
-	writer, err := NewUdpWriter(h.connbehavior.ttl, h.remote)
+	writer, err := NewUdpWriter(seq, h.connbehavior.ttl, h.remote)
 	if err != nil {
 		return err
 	}

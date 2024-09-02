@@ -64,8 +64,10 @@ type Data struct {
 
 type NetController struct {
 	HopsLock      sync.Mutex
+	seq           int
 	data          Data
 	settings      sync.Map
+	runOptions    *Options
 	hopHandlers   sync.Map
 	running       bool
 	cancelRequest chan struct{}
@@ -84,14 +86,14 @@ func (n *NetController) UnlockData() {
 }
 
 func (n *NetController) Run(options ...NetOption) error {
-	runOptions := &Options{}
+	n.runOptions = &Options{}
 	for _, opt := range options {
-		opt(runOptions)
+		opt(n.runOptions)
 	}
 
 	const port = 33434 // Common starting port used by traceroute tools
 
-	remote, err := NewRemote(runOptions.Host, port)
+	remote, err := NewRemote(n.runOptions.Host, port)
 	if err != nil {
 		return err
 	}
@@ -112,10 +114,11 @@ func (n *NetController) Run(options ...NetOption) error {
 	timeout := time.Duration(float64(3) * float64(time.Second.Nanoseconds()))
 	quiescent := time.Duration(float64(5) * float64(time.Second.Nanoseconds()))
 
-	n.data.HopStatus = make([]HopStatus, runOptions.MaxHops+1)
+	// Cleanup cache from any previous run
+	n.Reset()
 
 	reader := NewIcmpHandler(*listener, timeout)
-	for hop := 1; hop <= runOptions.MaxHops; hop++ {
+	for hop := 1; hop <= n.runOptions.MaxHops; hop++ {
 		hopHandler := NewHopHandler(*local, *remote, ConnBehavior{
 			pause:     pause,
 			timeout:   timeout,
@@ -136,6 +139,7 @@ func (n *NetController) Run(options ...NetOption) error {
 			reader.cancel()
 			fmt.Println("netcontroller canceling")
 			n.running = false
+			n.Reset()
 			return nil
 		default:
 			// TODO CONCURRENT MAP R/W ERROR
@@ -144,7 +148,7 @@ func (n *NetController) Run(options ...NetOption) error {
 				continue // TODO stray packet?
 			}
 			hopHandler := hopHandlerVal.(*HopHandler)
-			hopHandler.linger <- true // cancel timeout
+			hopHandler.donotlinger <- true
 			n.hopHandlers.Delete(string(answer.originPort))
 			if foundTarget {
 				// Are we past our target?
@@ -209,8 +213,8 @@ func (n *NetController) Run(options ...NetOption) error {
 				if newTop {
 					n.LockData()
 					n.data.TopHop = hopHandler.connbehavior.ttl
-					if n.data.TopHop <= runOptions.MaxHops {
-						for i := n.data.TopHop; i <= runOptions.MaxHops; i++ {
+					if n.data.TopHop <= n.runOptions.MaxHops {
+						for i := n.data.TopHop; i <= n.runOptions.MaxHops; i++ {
 							n.data.HopStatus[i] = NewHopStatus()
 						}
 					}
@@ -232,6 +236,17 @@ func (n *NetController) Run(options ...NetOption) error {
 	return nil
 }
 
+func (n *NetController) Reset() {
+	n.LockData()
+	n.data.TopHop = 0
+	n.hopHandlers.Range(func(key interface{}, value interface{}) bool {
+		n.hopHandlers.Delete(key)
+		return true
+	})
+	n.data.HopStatus = make([]HopStatus, n.runOptions.MaxHops+1)
+	n.UnlockData()
+}
+
 // TODO return a 3-state enum
 func (n *NetController) Cancel() bool {
 	if n.running {
@@ -246,18 +261,21 @@ func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) 
 		if delay > 0 {
 			time.Sleep(delay)
 		}
-
-		hopHandler.run()
+		n.LockData()
+		n.seq = 0
+		n.UnlockData()
+		hopHandler.run(n.seq)
 		n.hopHandlers.Store(string(hopHandler.udpwriter.sourcePort), hopHandler)
 
-		hopHandler.linger = make(chan bool)
+		hopHandler.donotlinger = make(chan bool)
 		timer := time.NewTimer(hopHandler.connbehavior.timeout)
 		go func() {
 			select {
 			case <-timer.C:
 				hopHandler.HopStats.PingMiss += 1
 				n.runHandler(hopHandler, hopHandler.connbehavior.quiescent-hopHandler.connbehavior.timeout /* delay */)
-			case <-hopHandler.linger:
+			case <-hopHandler.donotlinger:
+				return
 			}
 		}()
 	}()
