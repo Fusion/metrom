@@ -69,7 +69,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("%</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -82,7 +82,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -95,7 +95,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -108,7 +108,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -121,7 +121,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -134,7 +134,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td><td class=\"border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -147,7 +147,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("ms</td></tr>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

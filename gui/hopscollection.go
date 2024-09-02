@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gui/components"
 	"gui/models"
 	"gui/net"
@@ -100,7 +99,6 @@ func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 			net.WithOption(net.VHost{Value: r.FormValue("subject")}),
 			net.WithOption(net.VMaxHops{Value: 30}),
 		)
-		fmt.Println("canceling hopscollection process")
 		if err != nil {
 			openModal(w, r, "Error", err.Error())
 		}

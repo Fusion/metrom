@@ -1,13 +1,6 @@
 package net
 
-import (
-
-	//"golang.org/x/net/icmp"
-
-	"fmt"
-	"sync"
-	"time"
-)
+//"golang.org/x/net/icmp"
 
 /*
  * ICMP response format:
@@ -22,27 +15,28 @@ import (
 
  */
 
-type Value interface {
+/*
+type ValueV1 interface {
 	_isValue()
 }
-type VHost struct {
+type VHostV1 struct {
 	Value string
 }
-type VMaxHops struct {
+type VMaxHopsV1 struct {
 	Value int
 }
 
-func (v VHost) _isValue()    {}
-func (v VMaxHops) _isValue() {}
+func (v VHostV1) _isValue()    {}
+func (v VMaxHopsV1) _isValue() {}
 
-type Options struct {
+type OptionsV1 struct {
 	Host    string
 	MaxHops int
 }
 
-type NetOption func(*Options)
+type NetOptionV1 func(*Options)
 
-func WithOption(value Value) NetOption {
+func WithOptionV1(value Value) NetOption {
 	switch value.(type) {
 	case VHost:
 		return func(h *Options) {
@@ -57,7 +51,8 @@ func WithOption(value Value) NetOption {
 	}
 }
 
-type Data struct {
+// TODO CHECK IF ALREADY REPLIED WITH A LOWER TTL!!!
+type DataV1 struct {
 	TopHop    int
 	HopStatus []HopStatus
 }
@@ -65,7 +60,7 @@ type Data struct {
 type NetController struct {
 	HopsLock      sync.Mutex
 	seq           int
-	data          Data
+	data          DataV1
 	settings      sync.Map
 	runOptions    *Options
 	hopHandlers   sync.Map
@@ -125,7 +120,7 @@ func (n *NetController) Run(options ...NetOption) error {
 			quiescent: quiescent,
 			retries:   0,
 			ttl:       hop})
-		n.runHandler(&hopHandler, 0 /* delay */)
+		n.runHandler(&hopHandler, 0)
 	}
 
 	foundTarget := false
@@ -176,14 +171,6 @@ func (n *NetController) Run(options ...NetOption) error {
 				jitterMax = hopHandler.HopStats.JitterMax
 			}
 			hopHandler.MemoryLatency(elapsed)
-			/*
-				fmt.Printf("%d: from %s (%s) reply to %d in %dms\n",
-					hopHandler.connbehavior.ttl,
-					answer.ip.String(),
-					answer.name,
-					answer.originPort,
-					elapsed)
-			*/
 			n.LockData()
 			n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
 				RemoteIp:   answer.ip.String(),
@@ -229,7 +216,7 @@ func (n *NetController) Run(options ...NetOption) error {
 			}
 
 			//updateDisplay(n.data.HopStatus)
-			n.runHandler(hopHandler, hopHandler.connbehavior.pause-time.Duration(elapsed) /* delay */)
+			n.runHandler(hopHandler, hopHandler.connbehavior.pause-time.Duration(elapsed))
 		}
 	}
 
@@ -273,7 +260,7 @@ func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) 
 			select {
 			case <-timer.C:
 				hopHandler.HopStats.PingMiss += 1
-				n.runHandler(hopHandler, hopHandler.connbehavior.quiescent-hopHandler.connbehavior.timeout /* delay */)
+				n.runHandler(hopHandler, hopHandler.connbehavior.quiescent-hopHandler.connbehavior.timeout)
 			case <-hopHandler.donotlinger:
 				return
 			}
@@ -281,7 +268,7 @@ func (n *NetController) runHandler(hopHandler *HopHandler, delay time.Duration) 
 	}()
 }
 
-func (n *NetController) GetData() Data {
+func (n *NetController) GetData() DataV1 {
 	return n.data
 }
 
@@ -299,3 +286,4 @@ func updateDisplay(hopStatus []HopStatus) {
 		fmt.Printf("%d: %s\n", i, hopStatus[i])
 	}
 }
+*/

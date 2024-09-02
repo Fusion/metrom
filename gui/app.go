@@ -87,7 +87,7 @@ func closeModal(w http.ResponseWriter, r *http.Request) {
 
 func HopsCollector() chi.Router {
 	r := chi.NewRouter()
-	netController := net.NewNetController()
+	netController := net.NewNetControllerV2()
 	netController.SetSetting("resolve", "off")
 	resolver := net.NewResolver()
 	hopsCollection := NewHopsCollection(&netController, resolver)
