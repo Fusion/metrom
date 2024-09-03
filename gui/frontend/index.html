@@ -99,9 +99,15 @@
         <!-- -->
     </div>
   </div>
-  <div id="modalwrapper"></div>
+  <div id="modalwrapper"
+      hx-on::after-swap="sensibleReset()"
+  ></div>
 
   <script>
+    function sensibleReset(e) {
+      htmx.ajax('GET', '/resetsearch', '#actioncontainer')
+    }
+
     function themeSelect(e) {
       var cb = document.getElementById('themeselector');
       if(cb.checked != false) {
@@ -110,6 +116,7 @@
         document.querySelector('html').setAttribute('data-theme', 'light');
       }
     }
+    //htmx.logAll();
     /*
     htmx.on("htmx:responseError", function (e) {
       if (e.detail.xhr.status == 418) {

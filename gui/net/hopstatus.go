@@ -3,6 +3,7 @@ package net
 type HopStatus struct {
 	RemoteIp   string
 	RemoteDNS  []string
+	Candidate  bool
 	Elapsed    int64
 	ElapsedMin int64
 	ElapsedMax int64

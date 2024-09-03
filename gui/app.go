@@ -63,6 +63,7 @@ func NewChiRouter() *chi.Mux {
 	}{
 		version, "No update available",
 	})).ServeHTTP)
+	r.Get("/resetsearch", resetSearch)
 	r.Get("/closemodal", closeModal)
 
 	r.Get("/greet", templ.Handler(components.GreetForm("/greet")).ServeHTTP)
@@ -83,6 +84,12 @@ func closeModal(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
 	// Never write an empty string; wail's middleware makes some assumptions
 	w.Write(nil)
+}
+
+func resetSearch(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Cache-Control", "no-store")
+	component := components.OOBButton("")
+	component.Render(r.Context(), w)
 }
 
 func HopsCollector() chi.Router {

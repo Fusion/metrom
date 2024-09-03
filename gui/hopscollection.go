@@ -23,6 +23,11 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
 	hops := []models.FrontendHop{} // If I knew size in advance I couldl use make() to right-size this guy
 
+	if error := h.controller.GetState("error"); error != "" {
+		openModal(w, r, "Error", error)
+		h.controller.SetState("error", "")
+		return
+	}
 	h.controller.LockData()
 	data := h.controller.GetData()
 	for i := 1; i < len(data.HopStatus); i++ {
@@ -52,6 +57,10 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 			JitterMin:  strconv.FormatInt(data.HopStatus[i].JitterMin, 10),
 			JitterMax:  strconv.FormatInt(data.HopStatus[i].JitterMax, 10),
 		})
+		// TODO configurable
+		if data.HopStatus[i].Candidate || data.HopStatus[i].RemoteIp == data.RemoteIp { // Found target?
+			break
+		}
 	}
 	h.controller.UnlockData()
 	component := components.HopTable(hops)
@@ -95,13 +104,10 @@ func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 
 	h.resolver.Cleanup()
 	go func() {
-		err := h.controller.Run(
+		h.controller.Run(
 			net.WithOption(net.VHost{Value: r.FormValue("subject")}),
 			net.WithOption(net.VMaxHops{Value: 30}),
 		)
-		if err != nil {
-			openModal(w, r, "Error", err.Error())
-		}
 	}()
 
 	w.Header().Set("HX-Retarget", "#actioncontainer")

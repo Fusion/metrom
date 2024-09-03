@@ -6,6 +6,8 @@ type BackendController[T any, O any] interface {
 	GetData() T
 	LockData()
 	UnlockData()
+	SetState(key string, value string)
+	GetState(key string) string
 	SetSetting(key string, value string)
 	GetSetting(key string) string
 }

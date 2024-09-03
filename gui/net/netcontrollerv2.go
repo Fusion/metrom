@@ -1,7 +1,7 @@
 package net
 
 import (
-	"fmt"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -44,17 +44,20 @@ func WithOption(value Value) NetOption {
 type Data struct {
 	TopHop    int
 	HopStatus []HopStatus
+	RemoteIp  string
 }
 
 type NetControllerV2 struct {
-	HopsLock      sync.Mutex
-	seq           int
-	data          Data
-	settings      sync.Map
-	runOptions    *Options
-	hopHandlers   sync.Map
-	running       bool
-	cancelRequest chan struct{}
+	HopsLock                sync.Mutex
+	seq                     int
+	data                    Data
+	states                  sync.Map
+	settings                sync.Map
+	runOptions              *Options
+	hopHandlers             sync.Map
+	running                 bool
+	controllerCancelRequest chan struct{}
+	routines                sync.WaitGroup
 }
 
 func NewNetControllerV2() NetControllerV2 {
@@ -72,28 +75,26 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 	// Initialize/Reset
 	n.LockData()
 	n.data.TopHop = 0
-	n.hopHandlers.Range(func(key interface{}, value interface{}) bool {
-		n.hopHandlers.Delete(key)
-		return true
-	})
 	n.data.HopStatus = make([]HopStatus, n.runOptions.MaxHops+1)
 	n.UnlockData()
 	//
 
 	remote, err := NewRemote(n.runOptions.Host, port)
 	if err != nil {
-		fmt.Println(n.runOptions.Host)
-		fmt.Println(err)
+		n.SetState("error", err.Error())
 		return err
 	}
+	n.data.RemoteIp = remote.ip.String()
 
 	local, err := NewLocal()
 	if err != nil {
+		n.SetState("error", err.Error())
 		return err
 	}
 
 	listener, err := NewIcmpListener(*local)
 	if err != nil {
+		n.SetState("error", err.Error())
 		return err
 	}
 
@@ -105,7 +106,6 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 	reader := NewIcmpHandler(*listener, timeout)
 	go reader.listen()
 
-	fmt.Println("[][][][][][][][][][][][][][] Instantiating hophandlers")
 	// Instantiate one udp writer per hop
 	for hop := 1; hop <= n.runOptions.MaxHops; hop++ {
 		hopHandler := NewHopHandlerV2(
@@ -118,20 +118,33 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 				quiescent: quiescent,
 				retries:   0,
 				ttl:       hop})
-		go hopHandler.Run()
+		n.routines.Add(1)
+		go hopHandler.Run(&n.routines)
 	}
 
-	n.cancelRequest = make(chan struct{})
+	n.controllerCancelRequest = make(chan struct{})
 
 	n.running = true
+	/* TODO
+	   We have a race condition, as in we are getting new insertions while
+	   cleaning this up.
+	   We should tell the mailbox to discard all incoming updates
+	   while we are cleaning
+	*/
 	for answer := range reader.Mailbox {
 		select {
-		case <-n.cancelRequest:
+		case <-n.controllerCancelRequest:
+			n.hopHandlers.Range(func(key interface{}, value interface{}) bool {
+				value.(*HopHandlerV2).hhCancelRequest <- true
+				n.hopHandlers.Delete(key)
+				return true
+			})
+			n.routines.Wait()
 			reader.cancel()
 			n.running = false
 			return nil
 		default:
-			hopHandlerVal, ok := n.hopHandlers.Load(string(answer.originPort))
+			hopHandlerVal, ok := n.hopHandlers.Load(strconv.Itoa(answer.originPort))
 			if !ok {
 				continue // TODO stray packet?
 			}
@@ -163,6 +176,7 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 			n.data.HopStatus[hopHandler.connbehavior.ttl] = HopStatus{
 				RemoteIp:   answer.ip.String(),
 				RemoteDNS:  answer.name,
+				Candidate:  answer.candidate,
 				Elapsed:    elapsed,
 				ElapsedMin: hopHandler.HopStats.ElapsedMin,
 				ElapsedMax: hopHandler.HopStats.ElapsedMax,
@@ -183,6 +197,10 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 
 // Return true if it was acrtually running
 func (n *NetControllerV2) Cancel() bool {
+	if n.running {
+		close(n.controllerCancelRequest)
+		return true
+	}
 	return false
 }
 
@@ -203,6 +221,21 @@ func (n *NetControllerV2) SetSetting(key string, value string) {
 }
 
 func (n *NetControllerV2) GetSetting(key string) string {
-	res, _ := n.settings.Load(key)
+	res, ok := n.settings.Load(key)
+	if !ok {
+		return ""
+	}
+	return res.(string)
+}
+
+func (n *NetControllerV2) SetState(key string, value string) {
+	n.states.Store(key, value)
+}
+
+func (n *NetControllerV2) GetState(key string) string {
+	res, ok := n.states.Load(key)
+	if !ok {
+		return ""
+	}
 	return res.(string)
 }

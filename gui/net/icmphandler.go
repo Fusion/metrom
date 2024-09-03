@@ -35,7 +35,12 @@ func (i *IcmpHandler) listen() {
 		default:
 			readBytes := make([]byte, 1500)
 			_, sAddr, connErr := i.icmpListener.packetConn.ReadFrom(readBytes)
+			// Origina Port: offset from ICMP header included in IP header
 			originPort := int(readBytes[28])*256 + int(readBytes[29]) // lol ntohs says hello
+			candidate := false
+			if readBytes[0] == 0x03 { // Found target maybe -- it will be dst unreachable, not TTL
+				candidate = true
+			}
 
 			if connErr != nil {
 				if errors.Is(connErr, os.ErrDeadlineExceeded) {
@@ -51,7 +56,8 @@ func (i *IcmpHandler) listen() {
 			i.Mailbox <- &IcmpAnswer{
 				originPort: originPort,
 				ip:         remoteIp,
-				name:       []string{}}
+				name:       []string{},
+				candidate:  candidate}
 		}
 	}
 }

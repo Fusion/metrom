@@ -1,6 +1,7 @@
 package net
 
 import (
+	"strconv"
 	"sync"
 	"time"
 )
@@ -18,17 +19,18 @@ type HopStatsV2 struct {
 	ProbeMiss         int
 }
 type HopHandlerV2 struct {
-	local         Local
-	remote        Remote
-	handlerMap    *sync.Map
-	connbehavior  ConnBehavior
-	attemptsleft  int
-	udpwriter     *UdpWriter
-	start         time.Time
-	HopStats      HopStatsV2
-	cancelRequest chan struct{}
-	pokeRequest   chan bool
-	poked         bool
+	local           Local
+	remote          Remote
+	handlerMap      *sync.Map
+	connbehavior    ConnBehavior
+	attemptsleft    int
+	udpwriter       *UdpWriter
+	start           time.Time
+	HopStats        HopStatsV2
+	hhCancelRequest chan bool
+	pokeRequest     chan bool
+	poked           bool
+	dead            bool
 }
 
 func NewHopHandlerV2(local Local, remote Remote, handlerMap *sync.Map, connbehavior ConnBehavior) HopHandlerV2 {
@@ -43,20 +45,29 @@ func NewHopHandlerV2(local Local, remote Remote, handlerMap *sync.Map, connbehav
 			JitterMin:  -1,
 			JitterMax:  -1,
 		},
-		attemptsleft:  3,
-		cancelRequest: make(chan struct{}),
-		pokeRequest:   make(chan bool)}
+		attemptsleft:    3,
+		hhCancelRequest: make(chan bool),
+		pokeRequest:     make(chan bool)}
 }
 
 // TODO add 3 seconds timeout after which if not reset by a pokeQuest we try again
-func (h *HopHandlerV2) Run() {
+func (h *HopHandlerV2) Run(group *sync.WaitGroup) {
+	defer group.Done()
+
+	h.dead = false
 	h.poke()
+
 	for {
 		timer := time.NewTimer(h.connbehavior.timeout)
 		select {
-		case <-h.cancelRequest:
+		case <-h.hhCancelRequest:
+			h.dead = true
 			return
 		case <-timer.C:
+			if h.dead {
+				return
+			}
+			//fmt.Println("DING! ttl = ", h.connbehavior.ttl, " id:", h.hhCancelRequest)
 			if h.HopStats.PingTotal%3 == 0 { // Initial ping in a sequence of n probes
 				h.HopStats.ProbeMiss = 0
 			}
@@ -79,15 +90,17 @@ func (h *HopHandlerV2) Run() {
 }
 
 func (h *HopHandlerV2) poke() error {
-	writer, err := NewUdpWriter(0, h.connbehavior.ttl, h.remote)
-	h.handlerMap.Store(string(writer.sourcePort), h) // store handler indexed by just booked source port
+	var err error
+	if h.udpwriter == nil {
+		h.udpwriter, err = NewUdpWriter(0, h.connbehavior.ttl, h.remote)
+	}
+	h.handlerMap.Store(strconv.Itoa(h.udpwriter.sourcePort), h) // store handler indexed by just booked source port
 	if err != nil {
 		return err
 	}
 	h.start = time.Now()
-	h.udpwriter = writer
-	writer.poke()
-	writer.cleanup()
+	h.udpwriter.poke()
+	//h.udpwriter.cleanup()
 	return nil
 }
 

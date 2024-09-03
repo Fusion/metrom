@@ -6,4 +6,5 @@ type IcmpAnswer struct {
 	originPort int
 	ip         net.IP
 	name       []string
+	candidate  bool
 }
