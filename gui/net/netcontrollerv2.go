@@ -125,15 +125,10 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 	n.controllerCancelRequest = make(chan struct{})
 
 	n.running = true
-	/* TODO
-	   We have a race condition, as in we are getting new insertions while
-	   cleaning this up.
-	   We should tell the mailbox to discard all incoming updates
-	   while we are cleaning
-	*/
 	for answer := range reader.Mailbox {
 		select {
 		case <-n.controllerCancelRequest:
+			n.running = false
 			n.hopHandlers.Range(func(key interface{}, value interface{}) bool {
 				value.(*HopHandlerV2).hhCancelRequest <- true
 				n.hopHandlers.Delete(key)
@@ -141,7 +136,6 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 			})
 			n.routines.Wait()
 			reader.cancel()
-			n.running = false
 			return nil
 		default:
 			hopHandlerVal, ok := n.hopHandlers.Load(strconv.Itoa(answer.originPort))
@@ -202,6 +196,10 @@ func (n *NetControllerV2) Cancel() bool {
 		return true
 	}
 	return false
+}
+
+func (n *NetControllerV2) IsBusy() bool {
+	return n.running
 }
 
 func (n *NetControllerV2) LockData() {

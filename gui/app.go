@@ -63,7 +63,6 @@ func NewChiRouter() *chi.Mux {
 	}{
 		version, "No update available",
 	})).ServeHTTP)
-	r.Get("/resetsearch", resetSearch)
 	r.Get("/closemodal", closeModal)
 
 	r.Get("/greet", templ.Handler(components.GreetForm("/greet")).ServeHTTP)
@@ -86,12 +85,6 @@ func closeModal(w http.ResponseWriter, r *http.Request) {
 	w.Write(nil)
 }
 
-func resetSearch(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Cache-Control", "no-store")
-	component := components.OOBButton("")
-	component.Render(r.Context(), w)
-}
-
 func HopsCollector() chi.Router {
 	r := chi.NewRouter()
 	netController := net.NewNetControllerV2()
@@ -101,5 +94,6 @@ func HopsCollector() chi.Router {
 	r.Get("/", hopsCollection.Get)
 	r.Post("/", hopsCollection.Post)
 	r.Post("/toggleresolve", hopsCollection.ToggleResolve)
+	r.Get("/resetsearch", hopsCollection.ResetSearch)
 	return r
 }

@@ -5,16 +5,16 @@ import "gui/models"
 
 templ HopTable(Hops []models.FrontendHop) {
 	for _,val := range Hops {
-                <tr class="text-gray-500">
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.Hop }</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.Host }</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.Loss }%</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.LatencyAvg }ms</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.LatencyMin }ms</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.LatencyMax }ms</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.JitterAvg }ms</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.JitterMin }ms</td>
-                  <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">{ val.JitterMax }ms</td>
+                <tr>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.Hop }</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.Host }</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.Loss }%</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.LatencyAvg }ms</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.LatencyMin }ms</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.LatencyMax }ms</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.JitterAvg }ms</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.JitterMin }ms</td>
+                  <td class="border-t-0 px-4 align-middle text-xs font-medium  whitespace-nowrap p-4">{ val.JitterMax }ms</td>
                 </tr>
 	}
 }
@@ -41,16 +41,49 @@ templ Modal(title string, message string) {
 
 templ OOBButton(action string) {
 	if action == "search" {
-            <button
-              class="btn"
-              type="submit"
-            >Stop</button>
+              <input
+                class="input input-bordered"
+                type="text"
+                name="subject"
+                id="subject"
+                placeholder="subject"
+				disabled
+              />
+              <button
+                class="btn"
+                type="submit"
+				id="subject-submit"
+              >Stop</button>
 			<span class="loading loading-bars inline-block align-middle"></span>
+	} else if action == "busy" {
+              <input
+                class="input input-bordered"
+                type="text"
+                name="subject"
+                id="subject"
+                placeholder="subject"
+				disabled
+              />
+              <button
+                class="btn cfr-busy"
+                type="submit"
+				id="subject-submit"
+				disabled
+              >Stopping</button>
 	} else {
-            <button
-              class="btn"
-              type="submit"
-            >Start</button>
+              <input
+                class="input input-bordered"
+                type="text"
+                name="subject"
+                id="subject"
+                placeholder="subject"
+				autofocus
+              />
+              <button
+                class="btn"
+                type="submit"
+				id="subject-submit"
+              >Start</button>
 	}
 }
 

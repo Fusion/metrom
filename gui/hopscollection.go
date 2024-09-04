@@ -86,12 +86,24 @@ func (h *HopsCollection) ToggleResolve(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *HopsCollection) ResetSearch(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Cache-Control", "no-store")
+	w.Header().Set("HX-Retarget", "#actioncontainer")
+	if h.controller.IsBusy() {
+		component := components.OOBButton("busy")
+		component.Render(r.Context(), w)
+	} else {
+		component := components.OOBButton("")
+		component.Render(r.Context(), w)
+	}
+}
+
 func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
 
 	if h.controller.Cancel() { // I was running!
 		w.Header().Set("HX-Retarget", "#actioncontainer")
-		component := components.OOBButton("done")
+		component := components.OOBButton("busy")
 		component.Render(r.Context(), w)
 		return
 	}

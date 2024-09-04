@@ -50,7 +50,6 @@ func NewHopHandlerV2(local Local, remote Remote, handlerMap *sync.Map, connbehav
 		pokeRequest:     make(chan bool)}
 }
 
-// TODO add 3 seconds timeout after which if not reset by a pokeQuest we try again
 func (h *HopHandlerV2) Run(group *sync.WaitGroup) {
 	defer group.Done()
 
