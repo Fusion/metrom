@@ -27,7 +27,7 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:             "gui",
+		Title:             "Metrom",
 		Width:             1040,
 		Height:            768,
 		MinWidth:          1040,
@@ -81,8 +81,8 @@ func main() {
 			WebviewIsTransparent: true,
 			WindowIsTranslucent:  true,
 			About: &mac.AboutInfo{
-				Title:   "MTR",
-				Message: "MTR by Chris",
+				Title:   "Metrom",
+				Message: "Metrom by Chris",
 				Icon:    icon,
 			},
 		},

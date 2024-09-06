@@ -6,6 +6,7 @@ toolchain go1.22.5
 
 require (
 	github.com/a-h/templ v0.2.771
+	github.com/adrg/xdg v0.5.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/wailsapp/wails/v2 v2.9.1
 	golang.org/x/net v0.28.0

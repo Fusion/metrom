@@ -78,12 +78,38 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HopsCollection) ToggleResolve(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Cache-Control", "no-store")
 	if r.FormValue("cb-resolve") == "on" {
 		h.controller.SetSetting("resolve", "on")
+		models.SetPreference(AppPreferences, "resolve", true)
 	} else {
 		h.controller.SetSetting("resolve", "off")
+		models.SetPreference(AppPreferences, "resolve", false)
 	}
+	models.SavePreferences(AppPreferences)
+}
+
+func (h *HopsCollection) SaveMaxHops(w http.ResponseWriter, r *http.Request) {
+	value, _ := strconv.Atoi(r.FormValue("maxhopsslider"))
+	models.SetPreference(AppPreferences, "maxhops", value)
+	models.SavePreferences(AppPreferences)
+}
+
+func (h *HopsCollection) SaveTimeout(w http.ResponseWriter, r *http.Request) {
+	value, _ := strconv.Atoi(r.FormValue("timeoutslider"))
+	models.SetPreference(AppPreferences, "timeout", value)
+	models.SavePreferences(AppPreferences)
+}
+
+func (h *HopsCollection) SaveProbes(w http.ResponseWriter, r *http.Request) {
+	value, _ := strconv.Atoi(r.FormValue("probesslider"))
+	models.SetPreference(AppPreferences, "probecount", value)
+	models.SavePreferences(AppPreferences)
+}
+
+func (h *HopsCollection) SaveJitter(w http.ResponseWriter, r *http.Request) {
+	value, _ := strconv.Atoi(r.FormValue("jitterslider"))
+	models.SetPreference(AppPreferences, "jittersamples", value)
+	models.SavePreferences(AppPreferences)
 }
 
 func (h *HopsCollection) ResetSearch(w http.ResponseWriter, r *http.Request) {
