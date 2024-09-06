@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gui/components"
-	"gui/models"
-	"gui/net"
+	"metrom/components"
+	"metrom/models"
+	"metrom/net"
 	"net/http"
 	"strconv"
 )

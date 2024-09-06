@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-	"gui/components"
-	"gui/models"
-	"gui/net"
+	"metrom/components"
+	"metrom/models"
+	"metrom/net"
 	"net/http"
 
 	"github.com/a-h/templ"

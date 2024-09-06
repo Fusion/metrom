@@ -82,7 +82,7 @@ func main() {
 			WindowIsTranslucent:  true,
 			About: &mac.AboutInfo{
 				Title:   "Metrom",
-				Message: "Metrom by Chris",
+				Message: "Metrom by Chris\nhttps://github.com/fusion/metrom",
 				Icon:    icon,
 			},
 		},

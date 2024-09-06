@@ -1,4 +1,4 @@
-module gui
+module metrom
 
 go 1.21
 
