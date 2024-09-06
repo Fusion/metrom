@@ -7,3 +7,4 @@ build-windows:
 build-macos:
 	sudo wails build -platform darwin/arm64
 
+build: build-windows build-macos

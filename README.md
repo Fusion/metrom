@@ -4,14 +4,17 @@
 
 UDP Probing, even on Windows.
 
-## Notes
+## Using
 
-### Could be options
+### Windows
 
-- timeout (3s)
-- number of probes per poke (3)
-- maximum hops (30)
-- starting remote port
-- jitter samples count
+Double-click to run... you may or may not need to run as Administrator, depending on your security settings.
 
 
+### MacOS
+
+The app is not notarized, and does not have a security profile. Therefore to run it you will need to elevate privileges from the terminal:
+
+```
+sudo /Applications/metrom.app/Contents/MacOS/metrom
+```

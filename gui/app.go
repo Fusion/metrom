@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"metrom/components"
 	"metrom/models"
 	"metrom/net"
@@ -27,7 +26,6 @@ func NewApp() *App {
 
 // startup is called at application startup
 func (a *App) startup(ctx context.Context) {
-	fmt.Println("LOAD PREFS")
 	a.ctx = ctx
 	models.LoadPreferences(AppPreferences)
 }
