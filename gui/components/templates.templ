@@ -79,7 +79,6 @@ templ MainBody(prefs *models.Preferences) {
             </thead>
             <tbody id="hop-list" class="divide-y divide-gray-100" hx-target="#hop-list" hx-get="/hops" hx-trigger="every 2s" hx-on::trigger="console.log(event)"></tbody>
           </table>
-
         </div>
         <!-- -->
     </div>
@@ -89,6 +88,19 @@ templ MainBody(prefs *models.Preferences) {
   ></div>
   <div id="helpwrapper"
   ></div>
+	<dialog id="consolemodal" class="modal modal-box w-11/12 max-w-full align-top flex flex-col">
+			<div id="consolehandle" class="console-window text-white p-4 rounded-lg w-full max-w-full">
+				<div class="console-header flex justify-between mb-2">
+					<h2 class="text-lg font-bold">Console</h2>
+					<div class="join">
+					<button class="clear-console px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none">Clear</button>
+					<button id="closeconsole" class="ml-2 px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none">Close</button>
+					</div>
+				</div>
+				<div class="console-body">
+				</div>
+			</div>
+	</dialog>
 
   <script>
     function sensibleReset(e) {
@@ -132,7 +144,25 @@ templ MainBody(prefs *models.Preferences) {
       themeUpdateBackend(theme);
     }
 
+	function displayLogsOn() {
+        document.getElementById('consolemodal').classList.add('modal-open')
+	}
+
+	function dispayLogsOff() {
+		document.getElementById('consolemodal').classList.remove('modal-open')
+	}
+
+	function displayLogs(e) {
+      var cb = document.getElementById('displaylogs');
+      if(cb.checked != false) {
+		displayLogsOn();
+      } else {
+		displayLogsOff();
+	  }
+	}
+
     htmx.onLoad(function(elt) {
+      // update pref fields
       for (const pref of ['maxhops','timeout','probes','jitter']) {
         const output = document.getElementById(pref + "feedback");
         const input = document.getElementById(pref + "slider");
@@ -141,7 +171,60 @@ templ MainBody(prefs *models.Preferences) {
           output.textContent = this.value;
         });
       }
+
+      // create debug console
+      const consoleBody = document.querySelector('.console-body');
+      const clearButton = document.querySelector('.clear-console');
+      console.log = function(...args) {
+        const logMessage = document.createElement('div');
+        logMessage.classList.add('log-message', 'mb-1');
+        logMessage.textContent = args.join(' ');
+        consoleBody.appendChild(logMessage);
+        consoleBody.scrollTop = consoleBody.scrollHeight;
+      };
+      clearButton.addEventListener('click', () => {
+        consoleBody.innerHTML = '';
+      });
+
+      // make debug console draggable
+      const dialog = document.getElementById('consolemodal');
+      const dialogOverlay = document.getElementById('body');
+      const closeButton = document.getElementById('closeconsole');
+      let isDragging = false;
+      let startX, startY, startWidth, startHeight;
+      function startDragging(e) {
+        isDragging = true;
+        startX = e.clientX - dialog.offsetLeft;
+        startY = e.clientY - dialog.offsetTop;
+      }
+      function drag(e) {
+        if (!isDragging) return;
+        const newX = e.clientX - startX;
+        const newY = e.clientY - startY;
+        dialog.style.left = newX + 'px';
+        dialog.style.top = newY + 'px';
+      }
+      function stopDragging() {
+        isDragging = false;
+      }
+      dialog.addEventListener('mousedown', startDragging);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', stopDragging);
+      closeButton.addEventListener('click', () => {
+		displayLogsOff();
+        document.getElementById('displaylogs').checked = false;
+      });
     });
+
+	function fetchLogs() {
+		fetch('/logs')
+		.then(response => response.json())
+		.then(data => {
+			data.forEach(msg => console.log(msg))
+		})
+	}
+	setInterval(fetchLogs, 1000);
+	
     //htmx.logAll();
   </script>
   if prefs.Theme == "dark" {
@@ -263,6 +346,20 @@ templ Preferences(prefs *models.Preferences) {
                       <label class="flex cursor-pointer">
                         <span class="label-text w-full">Jitter samples (<span id="jitterfeedback"></span>)</span>
                           <input id="jitterslider" name="jitterslider" type="range" min="4" max="10" value={ strconv.Itoa(prefs.JitterSamples) } class="range range-info range-xs" hx-post="/hops/savejitter" hx-trigger="change" />
+                      </label>
+                    </form>
+                  </li>
+                  <li>
+                    <form>
+                      <label class="flex cursor-pointer">
+                        <span class="label-text w-full">Display Logs</span>
+                        <input
+                          type="checkbox"
+                          id="displaylogs"
+                          class="toggle"
+                          value="synthwave"
+                          onclick="displayLogs()"
+                      />
                       </label>
                     </form>
                   </li>

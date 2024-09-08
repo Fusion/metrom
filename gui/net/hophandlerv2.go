@@ -1,6 +1,8 @@
 package net
 
 import (
+	"fmt"
+	"metrom/util"
 	"strconv"
 	"sync"
 	"time"
@@ -91,6 +93,7 @@ func (h *HopHandlerV2) Run(group *sync.WaitGroup) {
 func (h *HopHandlerV2) poke() error {
 	var err error
 	if h.udpwriter == nil {
+		util.Logger.Log(fmt.Sprintf("hophandlerv2:poke:lazyinit:ttl=%d", h.connbehavior.ttl))
 		h.udpwriter, err = NewUdpWriter(0, h.connbehavior.ttl, h.remote)
 	}
 	h.handlerMap.Store(strconv.Itoa(h.udpwriter.sourcePort), h) // store handler indexed by just booked source port

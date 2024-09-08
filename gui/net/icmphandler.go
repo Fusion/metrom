@@ -2,8 +2,10 @@ package net
 
 import (
 	"errors"
+	"metrom/util"
 	"net"
 	"os"
+	"sync"
 	"time"
 )
 
@@ -11,7 +13,7 @@ type IcmpHandler struct {
 	icmpListener  IcmpListener
 	timeout       time.Duration
 	Mailbox       chan *IcmpAnswer
-	cancelRequest chan struct{}
+	cancelRequest chan bool
 }
 
 func NewIcmpHandler(icmpListener IcmpListener, timeout time.Duration) IcmpHandler {
@@ -25,15 +27,20 @@ func (i *IcmpHandler) cleanup() {
 	i.icmpListener.packetConn.Close()
 }
 
-func (i *IcmpHandler) listen() {
-	i.cancelRequest = make(chan struct{})
+func (i *IcmpHandler) listen(group *sync.WaitGroup) {
+	defer group.Done()
+
+	i.cancelRequest = make(chan bool)
+	util.Logger.Log("icmphandler:listen")
 	for {
 		select {
 		case <-i.cancelRequest:
 			i.icmpListener.packetConn.Close()
+			util.Logger.Log("icmphandler:listen:cancel:receive")
 			return
 		default:
 			readBytes := make([]byte, 1500)
+			i.icmpListener.packetConn.SetReadDeadline(time.Now().Add(3 * time.Second))
 			_, sAddr, connErr := i.icmpListener.packetConn.ReadFrom(readBytes)
 			// Origina Port: offset from ICMP header included in IP header
 			originPort := int(readBytes[28])*256 + int(readBytes[29]) // lol ntohs says hello
@@ -44,9 +51,8 @@ func (i *IcmpHandler) listen() {
 
 			if connErr != nil {
 				if errors.Is(connErr, os.ErrDeadlineExceeded) {
-					continue // TODO
+					continue
 				}
-				// TODO
 			}
 			remoteIp := net.ParseIP(sAddr.String())
 			if remoteIp == nil {
@@ -62,5 +68,6 @@ func (i *IcmpHandler) listen() {
 	}
 }
 func (i *IcmpHandler) cancel() {
-	close(i.cancelRequest)
+	util.Logger.Log("icmphandler:listen:cancel:send")
+	i.cancelRequest <- true
 }

@@ -1,6 +1,7 @@
 package net
 
 import (
+	"metrom/util"
 	"strconv"
 	"sync"
 	"time"
@@ -57,7 +58,8 @@ type NetControllerV2 struct {
 	hopHandlers             sync.Map
 	running                 bool
 	controllerCancelRequest chan struct{}
-	routines                sync.WaitGroup
+	listeners               sync.WaitGroup
+	writers                 sync.WaitGroup
 }
 
 func NewNetControllerV2() NetControllerV2 {
@@ -104,7 +106,8 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 
 	// Instantiate global icmp listener
 	reader := NewIcmpHandler(*listener, timeout)
-	go reader.listen()
+	n.listeners.Add(1)
+	go reader.listen(&n.listeners)
 
 	// Instantiate one udp writer per hop
 	for hop := 1; hop <= n.runOptions.MaxHops; hop++ {
@@ -118,8 +121,8 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 				quiescent: quiescent,
 				retries:   0,
 				ttl:       hop})
-		n.routines.Add(1)
-		go hopHandler.Run(&n.routines)
+		n.writers.Add(1)
+		go hopHandler.Run(&n.writers)
 	}
 
 	n.controllerCancelRequest = make(chan struct{})
@@ -128,14 +131,17 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 	for answer := range reader.Mailbox {
 		select {
 		case <-n.controllerCancelRequest:
-			n.running = false
 			n.hopHandlers.Range(func(key interface{}, value interface{}) bool {
 				value.(*HopHandlerV2).hhCancelRequest <- true
 				n.hopHandlers.Delete(key)
 				return true
 			})
-			n.routines.Wait()
+			n.writers.Wait()
+			util.Logger.Log("all writers terminated")
 			reader.cancel()
+			n.listeners.Wait()
+			util.Logger.Log("all listeners terminated")
+			n.running = false
 			return nil
 		default:
 			hopHandlerVal, ok := n.hopHandlers.Load(strconv.Itoa(answer.originPort))
@@ -192,6 +198,7 @@ func (n *NetControllerV2) Run(options ...NetOption) error {
 // Return true if it was acrtually running
 func (n *NetControllerV2) Cancel() bool {
 	if n.running {
+		util.Logger.Log("netcontrollerv2:cancel")
 		close(n.controllerCancelRequest)
 		return true
 	}

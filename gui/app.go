@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"metrom/components"
 	"metrom/models"
 	"metrom/net"
+	"metrom/util"
 	"net/http"
 
 	"github.com/a-h/templ"
@@ -52,6 +54,7 @@ func NewChiRouter() *chi.Mux {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	r.Get("/logs", fetchLogs)
 	r.Get("/body", templ.Handler(components.MainBody(AppPreferences)).ServeHTTP)
 
 	//r.Get("/closemodal", closeModal)
@@ -64,6 +67,13 @@ func NewChiRouter() *chi.Mux {
 
 	r.Post("/savetheme", saveTheme)
 	return r
+}
+
+func fetchLogs(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Cache-Control", "no-store")
+	w.Header().Set("Content-Type", "application/json")
+	msgs := util.Logger.GetLogs()
+	json.NewEncoder(w).Encode(*msgs)
 }
 
 func openModal(w http.ResponseWriter, r *http.Request, title string, message string) {

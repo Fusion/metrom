@@ -2,6 +2,7 @@ package net
 
 import (
 	"fmt"
+	"metrom/util"
 	"net"
 )
 
@@ -21,12 +22,11 @@ func NewLocal() (*Local, error) {
 		defer conn.Close()
 		address = conn.LocalAddr().(*net.UDPAddr).IP.String()
 	}
-	fmt.Printf("Using local IP [%s]\n", address)
+	util.Logger.Log(fmt.Sprintf("Using local IP [%s]", address))
 	return &Local{address: address}, nil
 }
 
 func (l Local) enumerate() {
-	fmt.Println("Finding mahhhh socks")
 	socketAddr := [4]byte{0, 0, 0, 0}
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

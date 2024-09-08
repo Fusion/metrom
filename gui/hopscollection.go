@@ -4,6 +4,7 @@ import (
 	"metrom/components"
 	"metrom/models"
 	"metrom/net"
+	"metrom/util"
 	"net/http"
 	"strconv"
 )
@@ -28,6 +29,7 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 		h.controller.SetState("error", "")
 		return
 	}
+	util.Logger.Log("hops / refresh")
 	h.controller.LockData()
 	data := h.controller.GetData()
 	for i := 1; i < len(data.HopStatus); i++ {
@@ -79,9 +81,11 @@ func (h *HopsCollection) Get(w http.ResponseWriter, r *http.Request) {
 
 func (h *HopsCollection) ToggleResolve(w http.ResponseWriter, r *http.Request) {
 	if r.FormValue("cb-resolve") == "on" {
+		util.Logger.Log("hops /toggleresolve set resolve to on")
 		h.controller.SetSetting("resolve", "on")
 		models.SetPreference(AppPreferences, "resolve", true)
 	} else {
+		util.Logger.Log("hops /toggleresolve set resolve to off")
 		h.controller.SetSetting("resolve", "off")
 		models.SetPreference(AppPreferences, "resolve", false)
 	}
@@ -89,24 +93,28 @@ func (h *HopsCollection) ToggleResolve(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *HopsCollection) SaveMaxHops(w http.ResponseWriter, r *http.Request) {
+	util.Logger.Log("hops /savemaxhops save maxhops preference")
 	value, _ := strconv.Atoi(r.FormValue("maxhopsslider"))
 	models.SetPreference(AppPreferences, "maxhops", value)
 	models.SavePreferences(AppPreferences)
 }
 
 func (h *HopsCollection) SaveTimeout(w http.ResponseWriter, r *http.Request) {
+	util.Logger.Log("hops /savetimeout save timeout preference")
 	value, _ := strconv.Atoi(r.FormValue("timeoutslider"))
 	models.SetPreference(AppPreferences, "timeout", value)
 	models.SavePreferences(AppPreferences)
 }
 
 func (h *HopsCollection) SaveProbes(w http.ResponseWriter, r *http.Request) {
+	util.Logger.Log("hops /saveprobes save probecount preference")
 	value, _ := strconv.Atoi(r.FormValue("probesslider"))
 	models.SetPreference(AppPreferences, "probecount", value)
 	models.SavePreferences(AppPreferences)
 }
 
 func (h *HopsCollection) SaveJitter(w http.ResponseWriter, r *http.Request) {
+	util.Logger.Log("hops /savejitter save jitttersamples preference")
 	value, _ := strconv.Atoi(r.FormValue("jitterslider"))
 	models.SetPreference(AppPreferences, "jittersamples", value)
 	models.SavePreferences(AppPreferences)
@@ -116,9 +124,11 @@ func (h *HopsCollection) ResetSearch(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
 	w.Header().Set("HX-Retarget", "#actioncontainer")
 	if h.controller.IsBusy() {
+		util.Logger.Log("hops /resetsearch check busy state")
 		component := components.OOBButton("busy")
 		component.Render(r.Context(), w)
 	} else {
+		util.Logger.Log("hops /resetsearch set ready state")
 		component := components.OOBButton("")
 		component.Render(r.Context(), w)
 	}
@@ -128,12 +138,14 @@ func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Cache-Control", "no-store")
 
 	if h.controller.Cancel() { // I was running!
+		util.Logger.Log("hops / (post) search cancelation")
 		w.Header().Set("HX-Retarget", "#actioncontainer")
 		component := components.OOBButton("busy")
 		component.Render(r.Context(), w)
 		return
 	}
 
+	util.Logger.Log("hops / (post) starting search")
 	subject := r.FormValue("subject")
 	if subject == "" {
 		openModal(w, r, "Hold on", "Please enter a host name or ip address")
@@ -148,6 +160,7 @@ func (h *HopsCollection) Post(w http.ResponseWriter, r *http.Request) {
 		)
 	}()
 
+	util.Logger.Log("hops / (post) set search state")
 	w.Header().Set("HX-Retarget", "#actioncontainer")
 	component := components.OOBButton("search")
 	component.Render(r.Context(), w)
