@@ -29,7 +29,7 @@ func MainBody(prefs *models.Preferences) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app w-screen\"><div class=\"navbar bg-base-300\"><div class=\"flex-1 px-2 lg:flex-none\"><form id=\"subject-form\" class=\"\" hx-post=\"/hops\" hx-on::after-request=\"if(event.detail.successful) this.reset()\"><span id=\"actioncontainer\" hx-on::after-swap=\"sensibleResetPart2()\"><input class=\"input input-bordered\" type=\"text\" name=\"subject\" id=\"subject\" placeholder=\"subject\" autofocus> <button class=\"btn\" type=\"submit\" id=\"subject-submit\">Start</button></span></form></div><div class=\"flex flex-1 justify-end px-2\"><div tabindex=\"0\" role=\"button\" class=\"btn mx-2\" hx-get=\"/help\" hx-trigger=\"click\" hx-target=\"#helpwrapper\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M10 19h3v3h-3zm2-17c5.35.22 7.68 5.62 4.5 9.67c-.83 1-2.17 1.66-2.83 2.5C13 15 13 16 13 17h-3c0-1.67 0-3.08.67-4.08c.66-1 2-1.59 2.83-2.25C15.92 8.43 15.32 5.26 12 5a3 3 0 0 0-3 3H6a6 6 0 0 1 6-6\"></path></svg></div><div class=\"dropdown dropdown-end space-y-6\"><div tabindex=\"0\" role=\"button\" class=\"btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M495.9 166.6c3.2 8.7.5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4l-55.6 17.8c-8.8 2.8-18.6.3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4c-1.1-8.4-1.7-16.9-1.7-25.5s.6-17.1 1.7-25.4l-43.3-39.4c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160a80 80 0 1 0 0 160\"></path></svg></div><ul tabindex=\"0\" id=\"preferences\" class=\"dropdown-content bg-base-100 rounded-box z-50 mt-4 w-72 p-2 shadow\" hx-get=\"/preferences\" hx-trigger=\"load\" hx-target=\"#preferences\"></ul></div></div></div><div class=\"flex flex-col items-center justify-center\"><div class=\"overflow-x-auto w-screen\"><table class=\"table table-pin-rows w-screen bg-transparent border-collapse\"><!-- head --><thead><tr><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Hop</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Host</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Loss</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Latency</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Min</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Max</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Jitter</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Min</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Max</th></tr></thead> <tbody id=\"hop-list\" class=\"divide-y divide-gray-100\" hx-target=\"#hop-list\" hx-get=\"/hops\" hx-trigger=\"every 2s\" hx-on::trigger=\"console.log(event)\"></tbody></table></div><!-- --></div></div><div id=\"modalwrapper\" hx-on::after-swap=\"sensibleReset()\"></div><div id=\"helpwrapper\"></div><dialog id=\"consolemodal\" class=\"modal modal-box w-11/12 max-w-full align-top flex flex-col\"><div id=\"consolehandle\" class=\"console-window text-white p-4 rounded-lg w-full max-w-full\"><div class=\"console-header flex justify-between mb-2\"><h2 class=\"text-lg font-bold\">Console</h2><div class=\"join\"><button class=\"clear-console px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none\">Clear</button> <button id=\"closeconsole\" class=\"ml-2 px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none\">Close</button></div></div><div class=\"console-body\"></div></div></dialog><script>\n    function sensibleReset(e) {\n      htmx.ajax('GET', '/hops/resetsearch', '#actioncontainer')\n    }\n\n    // Wait until the server-side is not busy canceling anymore\n    function sensibleResetPart2(e) {\n      if (document.getElementById('subject-submit').disabled) {\n        setTimeout(() => {\n          htmx.ajax('GET', '/hops/resetsearch', '#actioncontainer')\n        }, 1000)\n      }\n    }\n\n    function themeUpdateFrontend(theme) {\n      document.querySelector('html').setAttribute('data-theme', theme);\n    }\n\n    function themeUpdateBackend(theme) {\n      var body = {\n        theme: theme\n      };\n      htmx.ajax(\n        'POST',\n        '/savetheme',\n        {\n          values: {\n            theme: theme\n          }\n        })\n    }\n\n    function themeSelect(e) {\n      var cb = document.getElementById('themeselector');\n      var theme = 'light';\n      if(cb.checked != false) {\n        theme = 'dark';\n      }\n      themeUpdateFrontend(theme);\n      themeUpdateBackend(theme);\n    }\n\n\tfunction displayLogsOn() {\n        document.getElementById('consolemodal').classList.add('modal-open')\n\t}\n\n\tfunction dispayLogsOff() {\n\t\tdocument.getElementById('consolemodal').classList.remove('modal-open')\n\t}\n\n\tfunction displayLogs(e) {\n      var cb = document.getElementById('displaylogs');\n      if(cb.checked != false) {\n\t\tdisplayLogsOn();\n      } else {\n\t\tdisplayLogsOff();\n\t  }\n\t}\n\n    htmx.onLoad(function(elt) {\n      // update pref fields\n      for (const pref of ['maxhops','timeout','probes','jitter']) {\n        const output = document.getElementById(pref + \"feedback\");\n        const input = document.getElementById(pref + \"slider\");\n        output.textContent = input.value; \n        input.addEventListener(\"input\", function() {\n          output.textContent = this.value;\n        });\n      }\n\n      // create debug console\n      const consoleBody = document.querySelector('.console-body');\n      const clearButton = document.querySelector('.clear-console');\n      console.log = function(...args) {\n        const logMessage = document.createElement('div');\n        logMessage.classList.add('log-message', 'mb-1');\n        logMessage.textContent = args.join(' ');\n        consoleBody.appendChild(logMessage);\n        consoleBody.scrollTop = consoleBody.scrollHeight;\n      };\n      clearButton.addEventListener('click', () => {\n        consoleBody.innerHTML = '';\n      });\n\n      // make debug console draggable\n      const dialog = document.getElementById('consolemodal');\n      const dialogOverlay = document.getElementById('body');\n      const closeButton = document.getElementById('closeconsole');\n      let isDragging = false;\n      let startX, startY, startWidth, startHeight;\n      function startDragging(e) {\n        isDragging = true;\n        startX = e.clientX - dialog.offsetLeft;\n        startY = e.clientY - dialog.offsetTop;\n      }\n      function drag(e) {\n        if (!isDragging) return;\n        const newX = e.clientX - startX;\n        const newY = e.clientY - startY;\n        dialog.style.left = newX + 'px';\n        dialog.style.top = newY + 'px';\n      }\n      function stopDragging() {\n        isDragging = false;\n      }\n      dialog.addEventListener('mousedown', startDragging);\n      document.addEventListener('mousemove', drag);\n      document.addEventListener('mouseup', stopDragging);\n      closeButton.addEventListener('click', () => {\n\t\tdisplayLogsOff();\n        document.getElementById('displaylogs').checked = false;\n      });\n    });\n\n\tfunction fetchLogs() {\n\t\tfetch('/logs')\n\t\t.then(response => response.json())\n\t\t.then(data => {\n\t\t\tdata.forEach(msg => console.log(msg))\n\t\t})\n\t}\n\tsetInterval(fetchLogs, 1000);\n\t\n    //htmx.logAll();\n  </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app w-screen\"><div class=\"navbar bg-base-300\"><div class=\"flex-1 px-2 lg:flex-none\"><form id=\"subject-form\" class=\"\" hx-post=\"/hops\" hx-on::after-request=\"if(event.detail.successful) this.reset()\"><span id=\"actioncontainer\" hx-on::after-swap=\"sensibleResetPart2()\"><input class=\"input input-bordered\" type=\"text\" name=\"subject\" id=\"subject\" placeholder=\"subject\" autofocus> <button class=\"btn\" type=\"submit\" id=\"subject-submit\">Start</button></span></form></div><div class=\"flex flex-1 justify-end px-2\"><div tabindex=\"0\" role=\"button\" class=\"btn mx-2\" hx-get=\"/help\" hx-trigger=\"click\" hx-target=\"#helpwrapper\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 24 24\"><path fill=\"currentColor\" d=\"M10 19h3v3h-3zm2-17c5.35.22 7.68 5.62 4.5 9.67c-.83 1-2.17 1.66-2.83 2.5C13 15 13 16 13 17h-3c0-1.67 0-3.08.67-4.08c.66-1 2-1.59 2.83-2.25C15.92 8.43 15.32 5.26 12 5a3 3 0 0 0-3 3H6a6 6 0 0 1 6-6\"></path></svg></div><div class=\"dropdown dropdown-end space-y-6\"><div tabindex=\"0\" role=\"button\" class=\"btn\"><svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M495.9 166.6c3.2 8.7.5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4l-55.6 17.8c-8.8 2.8-18.6.3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4c-1.1-8.4-1.7-16.9-1.7-25.5s.6-17.1 1.7-25.4l-43.3-39.4c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160a80 80 0 1 0 0 160\"></path></svg></div><ul tabindex=\"0\" id=\"preferences\" class=\"dropdown-content bg-base-100 rounded-box z-50 mt-4 w-72 p-2 shadow\" hx-get=\"/preferences\" hx-trigger=\"load\" hx-target=\"#preferences\"></ul></div></div></div><div class=\"flex flex-col items-center justify-center\"><div class=\"overflow-x-auto w-screen\"><table class=\"table table-pin-rows w-screen bg-transparent border-collapse\"><!-- head --><thead><tr><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Hop</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Host</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Loss</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Latency</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Min</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Max</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Jitter</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Min</th><th class=\"px-4 bg-gray-50 text-gray-700 align-middle py-3 text-xs font-semibold text-left uppercase border-l-0 border-r-0 whitespace-nowrap\">Max</th></tr></thead> <tbody id=\"hop-list\" class=\"divide-y divide-gray-100\" hx-target=\"#hop-list\" hx-get=\"/hops\" hx-trigger=\"every 2s\" hx-on::trigger=\"console.log(event)\"></tbody></table></div><!-- --></div></div><div id=\"modalwrapper\" hx-on::after-swap=\"sensibleReset()\"></div><div id=\"helpwrapper\"></div><dialog id=\"consolemodal\" class=\"modal modal-box w-11/12 max-w-full align-top flex flex-col overflow-y-hidden\"><div id=\"consolehandle\" class=\"console-window text-white p-4 rounded-lg w-full max-w-full overflow-y-hidden\"><div class=\"console-header flex justify-between mb-2\"><h2 class=\"text-lg font-bold\">Console</h2><div class=\"join\"><button class=\"clear-console px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none\">Clear</button> <button id=\"closeconsole\" class=\"ml-2 px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none\">Close</button></div></div><div class=\"console-body-wrapper flex-col pb-6 overflow-y-auto\" style=\"height: 100%\"><div class=\"console-body\"></div></div></div></dialog><script>\n    function sensibleReset(e) {\n      htmx.ajax('GET', '/hops/resetsearch', '#actioncontainer')\n    }\n\n    // Wait until the server-side is not busy canceling anymore\n    function sensibleResetPart2(e) {\n      if (document.getElementById('subject-submit').disabled) {\n        setTimeout(() => {\n          htmx.ajax('GET', '/hops/resetsearch', '#actioncontainer')\n        }, 1000)\n      }\n    }\n\n    function themeUpdateFrontend(theme) {\n      document.querySelector('html').setAttribute('data-theme', theme);\n    }\n\n    function themeUpdateBackend(theme) {\n      var body = {\n        theme: theme\n      };\n      htmx.ajax(\n        'POST',\n        '/savetheme',\n        {\n          values: {\n            theme: theme\n          }\n        })\n    }\n\n    function themeSelect(e) {\n      var cb = document.getElementById('themeselector');\n      var theme = 'light';\n      if(cb.checked != false) {\n        theme = 'dark';\n      }\n      themeUpdateFrontend(theme);\n      themeUpdateBackend(theme);\n    }\n\n\tfunction displayLogsOn() {\n        document.getElementById('consolemodal').classList.add('modal-open')\n\t}\n\n\tfunction displayLogsOff() {\n\t\tdocument.getElementById('consolemodal').classList.remove('modal-open')\n\t}\n\n\tfunction displayLogs(e) {\n      var cb = document.getElementById('displaylogs');\n      if(cb.checked != false) {\n\t\tdisplayLogsOn();\n      } else {\n\t\tdisplayLogsOff();\n\t  }\n\t}\n\n    htmx.onLoad(function(elt) {\n      // update pref fields\n      for (const pref of ['maxhops','timeout','probes','jitter']) {\n        const output = document.getElementById(pref + \"feedback\");\n        const input = document.getElementById(pref + \"slider\");\n        output.textContent = input.value; \n        input.addEventListener(\"input\", function() {\n          output.textContent = this.value;\n        });\n      }\n\n      // create debug console\n      const consoleBodyWrapper = document.querySelector('.console-body-wrapper');\n      const consoleBody = document.querySelector('.console-body');\n      const clearButton = document.querySelector('.clear-console');\n      console.log = function(...args) {\n        const logMessage = document.createElement('div');\n        logMessage.classList.add('log-message', 'mb-1');\n        logMessage.textContent = args.join(' ');\n        consoleBody.appendChild(logMessage);\n        consoleBodyWrapper.scrollTop = consoleBodyWrapper.scrollHeight;\n      };\n      clearButton.addEventListener('click', () => {\n        consoleBody.innerHTML = '';\n      });\n\n      // make debug console draggable\n      const dialog = document.getElementById('consolemodal');\n      const dialogOverlay = document.getElementById('body');\n      const closeButton = document.getElementById('closeconsole');\n      let isDragging = false;\n      let startX, startY, startWidth, startHeight;\n      function startDragging(e) {\n        isDragging = true;\n        startX = e.clientX - dialog.offsetLeft;\n        startY = e.clientY - dialog.offsetTop;\n      }\n      function drag(e) {\n        if (!isDragging) return;\n        const newX = e.clientX - startX;\n        const newY = e.clientY - startY;\n        dialog.style.left = newX + 'px';\n        dialog.style.top = newY + 'px';\n      }\n      function stopDragging() {\n        isDragging = false;\n      }\n      dialog.addEventListener('mousedown', startDragging);\n      document.addEventListener('mousemove', drag);\n      document.addEventListener('mouseup', stopDragging);\n      closeButton.addEventListener('click', () => {\n\t\tdisplayLogsOff();\n        document.getElementById('displaylogs').checked = false;\n      });\n    });\n\n\tfunction fetchLogs() {\n\t\tfetch('/logs')\n\t\t.then(response => response.json())\n\t\t.then(data => {\n\t\t\tdata.forEach(msg => console.log(msg))\n\t\t})\n\t}\n\tsetInterval(fetchLogs, 1000);\n\t\n    //htmx.logAll();\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,7 +74,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(val.Hop)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 245, Col: 110}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 248, Col: 110}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -87,7 +87,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(val.Host)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 246, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 249, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -100,7 +100,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(val.Loss)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 247, Col: 111}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 250, Col: 111}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -113,7 +113,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(val.LatencyAvg)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 248, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 251, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -126,7 +126,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(val.LatencyMin)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 249, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 252, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -139,7 +139,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(val.LatencyMax)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 250, Col: 117}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 253, Col: 117}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -152,7 +152,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(val.JitterAvg)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 251, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 254, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -165,7 +165,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var10 string
 			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(val.JitterMin)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 252, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 255, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
@@ -178,7 +178,7 @@ func HopTable(Hops []models.FrontendHop) templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(val.JitterMax)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 253, Col: 116}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 256, Col: 116}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -238,7 +238,7 @@ func Preferences(prefs *models.Preferences) templ.Component {
 		var templ_7745c5c3_Var13 string
 		templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(prefs.MaxHops))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 324, Col: 140}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 327, Col: 140}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 		if templ_7745c5c3_Err != nil {
@@ -251,7 +251,7 @@ func Preferences(prefs *models.Preferences) templ.Component {
 		var templ_7745c5c3_Var14 string
 		templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(prefs.Timeout))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 332, Col: 138}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 335, Col: 138}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
 		if templ_7745c5c3_Err != nil {
@@ -264,7 +264,7 @@ func Preferences(prefs *models.Preferences) templ.Component {
 		var templ_7745c5c3_Var15 string
 		templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(prefs.ProbeCount))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 340, Col: 139}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 343, Col: 139}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
 		if templ_7745c5c3_Err != nil {
@@ -277,7 +277,7 @@ func Preferences(prefs *models.Preferences) templ.Component {
 		var templ_7745c5c3_Var16 string
 		templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(prefs.JitterSamples))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 348, Col: 142}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 351, Col: 142}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
 		if templ_7745c5c3_Err != nil {
@@ -316,7 +316,7 @@ func Modal(title string, message string) templ.Component {
 		var templ_7745c5c3_Var18 string
 		templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 373, Col: 40}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 376, Col: 40}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
 		if templ_7745c5c3_Err != nil {
@@ -329,7 +329,7 @@ func Modal(title string, message string) templ.Component {
 		var templ_7745c5c3_Var19 string
 		templ_7745c5c3_Var19, templ_7745c5c3_Err = templ.JoinStringErrs(message)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 374, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 377, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var19))
 		if templ_7745c5c3_Err != nil {
@@ -406,7 +406,7 @@ func Button(classes string, hxUrl string, hxTarget string, hxSwap string, method
 		var templ_7745c5c3_Var22 string
 		templ_7745c5c3_Var22, templ_7745c5c3_Err = templ.JoinStringErrs(hxTarget)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 442, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 445, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var22))
 		if templ_7745c5c3_Err != nil {
@@ -424,7 +424,7 @@ func Button(classes string, hxUrl string, hxTarget string, hxSwap string, method
 			var templ_7745c5c3_Var23 string
 			templ_7745c5c3_Var23, templ_7745c5c3_Err = templ.JoinStringErrs(hxUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 446, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 449, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var23))
 			if templ_7745c5c3_Err != nil {
@@ -443,7 +443,7 @@ func Button(classes string, hxUrl string, hxTarget string, hxSwap string, method
 			var templ_7745c5c3_Var24 string
 			templ_7745c5c3_Var24, templ_7745c5c3_Err = templ.JoinStringErrs(hxUrl)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 449, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 452, Col: 18}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var24))
 			if templ_7745c5c3_Err != nil {
@@ -461,7 +461,7 @@ func Button(classes string, hxUrl string, hxTarget string, hxSwap string, method
 		var templ_7745c5c3_Var25 string
 		templ_7745c5c3_Var25, templ_7745c5c3_Err = templ.JoinStringErrs(label)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 451, Col: 9}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 454, Col: 9}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var25))
 		if templ_7745c5c3_Err != nil {
@@ -505,7 +505,7 @@ func TextInput(name string, placeholder string, method string, endpoint string, 
 		var templ_7745c5c3_Var28 string
 		templ_7745c5c3_Var28, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 457, Col: 14}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 460, Col: 14}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var28))
 		if templ_7745c5c3_Err != nil {
@@ -518,7 +518,7 @@ func TextInput(name string, placeholder string, method string, endpoint string, 
 		var templ_7745c5c3_Var29 string
 		templ_7745c5c3_Var29, templ_7745c5c3_Err = templ.JoinStringErrs(placeholder)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 458, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 461, Col: 28}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var29))
 		if templ_7745c5c3_Err != nil {
@@ -536,7 +536,7 @@ func TextInput(name string, placeholder string, method string, endpoint string, 
 			var templ_7745c5c3_Var30 string
 			templ_7745c5c3_Var30, templ_7745c5c3_Err = templ.JoinStringErrs(endpoint)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 461, Col: 20}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 464, Col: 20}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var30))
 			if templ_7745c5c3_Err != nil {
@@ -555,7 +555,7 @@ func TextInput(name string, placeholder string, method string, endpoint string, 
 			var templ_7745c5c3_Var31 string
 			templ_7745c5c3_Var31, templ_7745c5c3_Err = templ.JoinStringErrs(endpoint)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 464, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 467, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var31))
 			if templ_7745c5c3_Err != nil {
@@ -573,7 +573,7 @@ func TextInput(name string, placeholder string, method string, endpoint string, 
 		var templ_7745c5c3_Var32 string
 		templ_7745c5c3_Var32, templ_7745c5c3_Err = templ.JoinStringErrs(hxTrigger)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 466, Col: 25}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 469, Col: 25}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var32))
 		if templ_7745c5c3_Err != nil {
@@ -625,7 +625,7 @@ func VersionComponent(Version string, UpdateText string) templ.Component {
 		var templ_7745c5c3_Var35 string
 		templ_7745c5c3_Var35, templ_7745c5c3_Err = templ.JoinStringErrs(Version)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 475, Col: 36}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 478, Col: 36}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var35))
 		if templ_7745c5c3_Err != nil {
@@ -638,7 +638,7 @@ func VersionComponent(Version string, UpdateText string) templ.Component {
 		var templ_7745c5c3_Var36 string
 		templ_7745c5c3_Var36, templ_7745c5c3_Err = templ.JoinStringErrs(UpdateText)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 476, Col: 38}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `components/templates.templ`, Line: 479, Col: 38}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var36))
 		if templ_7745c5c3_Err != nil {

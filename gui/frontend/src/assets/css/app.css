@@ -62,10 +62,6 @@ body {
   view-transition-name: main-header;
 }
 
-.console-window {
-  overflow-y: auto;
-}
-
 .log-message {
   font-family: monospace;
 }

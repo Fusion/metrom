@@ -88,8 +88,8 @@ templ MainBody(prefs *models.Preferences) {
   ></div>
   <div id="helpwrapper"
   ></div>
-	<dialog id="consolemodal" class="modal modal-box w-11/12 max-w-full align-top flex flex-col">
-			<div id="consolehandle" class="console-window text-white p-4 rounded-lg w-full max-w-full">
+	<dialog id="consolemodal" class="modal modal-box w-11/12 max-w-full align-top flex flex-col overflow-y-hidden">
+			<div id="consolehandle" class="console-window text-white p-4 rounded-lg w-full max-w-full overflow-y-hidden">
 				<div class="console-header flex justify-between mb-2">
 					<h2 class="text-lg font-bold">Console</h2>
 					<div class="join">
@@ -97,7 +97,9 @@ templ MainBody(prefs *models.Preferences) {
 					<button id="closeconsole" class="ml-2 px-2 py-1 bg-gray-800 rounded hover:bg-gray-700 focus:outline-none">Close</button>
 					</div>
 				</div>
-				<div class="console-body">
+				<div class="console-body-wrapper flex-col pb-6 overflow-y-auto" style="height: 100%">
+					<div class="console-body">
+					</div>
 				</div>
 			</div>
 	</dialog>
@@ -148,7 +150,7 @@ templ MainBody(prefs *models.Preferences) {
         document.getElementById('consolemodal').classList.add('modal-open')
 	}
 
-	function dispayLogsOff() {
+	function displayLogsOff() {
 		document.getElementById('consolemodal').classList.remove('modal-open')
 	}
 
@@ -173,6 +175,7 @@ templ MainBody(prefs *models.Preferences) {
       }
 
       // create debug console
+      const consoleBodyWrapper = document.querySelector('.console-body-wrapper');
       const consoleBody = document.querySelector('.console-body');
       const clearButton = document.querySelector('.clear-console');
       console.log = function(...args) {
@@ -180,7 +183,7 @@ templ MainBody(prefs *models.Preferences) {
         logMessage.classList.add('log-message', 'mb-1');
         logMessage.textContent = args.join(' ');
         consoleBody.appendChild(logMessage);
-        consoleBody.scrollTop = consoleBody.scrollHeight;
+        consoleBodyWrapper.scrollTop = consoleBodyWrapper.scrollHeight;
       };
       clearButton.addEventListener('click', () => {
         consoleBody.innerHTML = '';
